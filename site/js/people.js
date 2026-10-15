@@ -26,8 +26,15 @@ function ik(sx, sy, tx, ty, a, b, sg) { // sg: +1 = left arm, -1 = right arm. Pi
   const ac = Math.acos(clamp((a * a + d * d - b * b) / (2 * a * d), -1, 1)), base = Math.atan2(dy, dx), side = -sg;
   const e1 = { x: sx + Math.cos(base + ac) * a, y: sy + Math.sin(base + ac) * a }, e2 = { x: sx + Math.cos(base - ac) * a, y: sy + Math.sin(base - ac) * a };
   const px0 = sx + side * 30 * K, py0 = sy + 26 * K;                            // pole: out to the side and down, like a relaxed elbow
-  const e = Math.hypot(e1.x - px0, e1.y - py0) <= Math.hypot(e2.x - px0, e2.y - py0) ? e1 : e2;
-  return { ex: e.x, ey: e.y, hx: sx + dx, hy: sy + dy };
+  const e = Math.hypot(e1.x - px0, e1.y - py0) <= Math.hypot(e2.x - px0, e2.y - py0) ? e1 : e2, hx = sx + dx, hy = sy + dy;
+  // hand up at the face / ear / above the shoulder: a real arm folds, with the elbow forward and just below the hand. Plain 2D IK would
+  // throw the elbow out sideways (chicken wing) or across the chest, so blend towards a "folded" elbow as the hand rises.
+  const w = clamp((sy + 12 * K - hy) / (14 * K), 0, 1), ws = w * w * (3 - 2 * w);
+  if (ws > 0) {
+    let fx = hx - side * 2.5 * K, fy = hy + 0.95 * b; const fd = Math.hypot(fx - sx, fy - sy); if (fd > a) { fx = sx + (fx - sx) * a / fd; fy = sy + (fy - sy) * a / fd; }
+    return { ex: e.x + (fx - e.x) * ws, ey: e.y + (fy - e.y) * ws, hx, hy };
+  }
+  return { ex: e.x, ey: e.y, hx, hy };
 }
 // smooth the hand targets over time so changing activity never snaps an arm
 function sm(pose, key, t) {
