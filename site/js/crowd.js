@@ -126,7 +126,7 @@ class Person {
     // geometry comes from the rig itself (Sprites.metrics, in sim units) so cups and phones always meet the face; fallback = the original rig's numbers
     const M = Sprites.metrics ? Sprites.metrics(s, { lean: lean + shake, dy: dyAdj }, true) : null, sc = M ? M.height / 96 : 1;
     const shY = M ? M.shY : (-28 - 30 * k) + lean + shake + dyAdj, headTop = (M ? M.headTop : shY - 17 * sc) + hb + (down ? 1 : 0), mouth = M ? [M.mouth[0] + sway, M.mouth[1] + hb + (down ? 2 : 0)] : [4 + sway, headTop + 11 + (down ? 2 : 0)];
-    const tL = [-12, -33], tR = [12, -33], pose = { sway, lean: lean + shake, dy: dyAdj, legPose: this.legPose, tap, jig: this.jig && !playing ? Math.round(Math.sin(T * 9 + this.seed)) : 0, look: this.look, fx: Math.round(this.look.x * 2), fy: down ? 1 : 0, headDy: hb, t: T, blink: T < this.blinkUntil, arms: {}, holder: this, dt: Tapri.dt };
+    const tL = [-12, -33], tR = [12, -33], pose = { sway, lean: lean + shake, dy: dyAdj, legPose: this.legPose, tap, jig: this.jig && !playing ? Math.round(Math.sin(T * 9 + this.seed)) : 0, look: this.look, fx: Math.round(this.look.x * 2), fy: down ? 1 : 0, headDy: hb, t: T, blink: T < this.blinkUntil, arms: {}, holder: this, dt: Tapri.dt, rate: 7 };
     let rprop = null, lprop = null; const sit = Tapri.seatItems[this.idx], glassPos = [14, -33], platePos = [-14, -33];
     const sp = T - this.actT0;
     pose.expr = lg ? 'laugh' : T < this.smileUntil ? 'smile' : (talk || act === 'call') && T < this.talkUntil ? 'talk' : 'n';
@@ -141,7 +141,7 @@ class Person {
     else if (act === 'paper') { pose.arms.L = [-14, shY + 15 * sc]; pose.arms.R = [14, shY + 15 * sc]; lprop = 'paper'; }
     if (T < (this.shooUntil || 0)) { pose.arms.R = [20 + Math.sin(T * 17) * 7, shY + 24 * sc + Math.sin(T * 17) * 2]; pose.lean = (pose.lean || 0) + 2; pose.expr = 'talk'; }
     if (T < this.waveUntil) pose.arms.L = [-20, shY - 4 * sc + Math.sin(T * 14) * 3];
-    else if (talk && act === 'idle' && this.speaking) pose.arms.L = [-17, shY + 12 * sc - Math.abs(Math.sin(T * 5 + this.seed)) * 8];
+    else if (talk && act === 'idle' && this.speaking && Math.sin(T * 0.7 + this.seed) > -0.35) { const w = Math.sin(T * 2.3 + this.seed); pose.arms.L = [-15 - 1.5 * w, shY + 18 * sc - 3.5 * (0.5 + 0.5 * Math.sin(T * 3.1 + this.seed))]; } // slow, intermittent talking gesture
     const info = Sprites.sit(g, s, pose, light);
     const hp = { glass: this.glass, bites: this.bites, T, seed: this.seed, skin: s.skin };
     if (rprop) Tapri.stage.heldProp(rprop, info, hp); if (lprop) Tapri.stage.heldProp(lprop, info, hp);
