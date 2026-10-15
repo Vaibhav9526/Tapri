@@ -1,0 +1,18 @@
+{
+ "dir": "site/audio/sfx",
+ "naming": "<name>_<n>.mp3",
+ "items": [
+  {
+   "name": "dog_yelp",
+   "count": 2,
+   "seconds": 1.2,
+   "prompt": "a street dog yelping in surprise and pain after being shooed, short high-pitched yelp, outdoors"
+  },
+  {
+   "name": "trickle",
+   "count": 1,
+   "seconds": 2.5,
+   "prompt": "a dog peeing against a wooden post, quiet water trickle on stone pavement, outdoors"
+  }
+ ]
+}

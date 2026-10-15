@@ -1,0 +1,44 @@
+/* Theme styling for the HUD, panels and speech bubbles. Scope every rule with body[data-theme="<id>"].
+   Bubbles use .bub / .bub.order / .bub.call / .bub.speaker / .bub.note and the --u variable (screen px per scene pixel). */
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Noto+Sans+Devanagari:wght@500;700&display=swap');
+
+body[data-theme="comic"] .bub:not(.note) {
+  font-family: 'Kalam', 'Noto Sans Devanagari', 'Nirmala UI', 'Mangal', sans-serif;
+  font-weight: 700;
+  font-size: calc(var(--u) * 7);
+  line-height: 1.4;
+  color: #302a32;
+  background: #fff8df;
+  border: max(2px, calc(var(--u) * 1.1)) solid #302a32;
+  border-radius: 42% 45% 38% 41% / 28% 35% 29% 33%;
+  padding: calc(var(--u) * 3) calc(var(--u) * 4.5);
+  box-shadow: calc(var(--u) * 1.5) calc(var(--u) * 1.6) 0 #302a32;
+  max-width: calc(var(--u) * 99);
+}
+body[data-theme="comic"] .bub .tail {
+  border-color: #302a32;
+  border-width: max(2px, calc(var(--u) * 1.1));
+  width: calc(var(--u) * 4);
+  height: calc(var(--u) * 4);
+}
+body[data-theme="comic"] .bub.order { background: #f9dc7f; border-radius: 22% 18% 26% 20%; }
+body[data-theme="comic"] .bub.call { background: #d3e8e5; }
+body[data-theme="comic"] .bub.speaker { background: #d6e5bb; font-size: calc(var(--u) * 6); }
+body[data-theme="comic"] .bub.note { font-family: 'Kalam', 'Noto Sans Devanagari', sans-serif; color: #ffe1a0; }
+body[data-theme="comic"] #dock, body[data-theme="comic"] #world { border-color: #302a32; }
+body[data-theme="comic"] button:focus-visible { outline: 3px solid #f1c562; outline-offset: 3px; }
+body[data-theme="comic"] ::selection { color: #302a32; background: #f9dc7f; }
+body[data-theme="retro"] .bub:not(.note) {
+  background: #e9ddbc;
+  color: #493c2e;
+  border-color: #5c4b36;
+  border-radius: calc(var(--u) * 1.5);
+}
+body[data-theme="retro"] .bub .tail { border-color: #5c4b36; }
+body[data-theme="retro"] .bub.call { background: #d1d7cb; }
+body[data-theme="retro"] .bub.order { background: #e7d09c; }
+body[data-theme="retro"] ::selection { color: #342a22; background: #d8bd83; }
+@media (prefers-reduced-motion: reduce) {
+  body[data-theme="comic"] .bub, body[data-theme="retro"] .bub { transition: none; }
+}
+

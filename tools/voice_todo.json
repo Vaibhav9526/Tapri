@@ -1,0 +1,722 @@
+{
+ "manifest": "site/audio/voice2/manifest.json",
+ "manifestFormat": {
+  "lines": {
+   "<voice>|<text>": "voice2/<id>.mp3"
+  }
+ },
+ "voices": [
+  {
+   "voice": "m",
+   "text": "कल का मैच देखा? आख़िरी ओवर में तो जान ही निकल गई!",
+   "file": "voice2/3231cc2baa.mp3"
+  },
+  {
+   "voice": "m2",
+   "text": "अरे हाँ यार! मैंने तो टीवी बंद ही कर दिया था",
+   "file": "voice2/ad08ed12e9.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "फिर वापस चालू किया क्या?",
+   "file": "voice2/644b54c8bf.mp3"
+  },
+  {
+   "voice": "m2",
+   "text": "और क्या! छक्का लगा तो पूरी गली चिल्ला उठी",
+   "file": "voice2/39f25fe119.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "आज तो बड़ी गर्मी है, पंखा भी हवा नहीं दे रहा",
+   "file": "voice2/69ac5ba936.mp3"
+  },
+  {
+   "voice": "m2",
+   "text": "बारिश आ जाए तो मज़ा आ जाए, बस चाय और पकौड़े",
+   "file": "voice2/d099873909.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "पकौड़े तो राकेश भैया के ही बेस्ट हैं",
+   "file": "voice2/02fc9f0856.mp3"
+  },
+  {
+   "voice": "m2",
+   "text": "हाँ, और चटनी तो कमाल की बनाते हैं",
+   "file": "voice2/0e19e504bd.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "ऑफिस में आज फिर मीटिंग ही मीटिंग थी",
+   "file": "voice2/76f1c3acde.mp3"
+  },
+  {
+   "voice": "m2",
+   "text": "यार, इसीलिए तो शाम को यहाँ आ जाता हूँ",
+   "file": "voice2/a9e11e3da0.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "चाय पर सब टेंशन भूल जाती है",
+   "file": "voice2/a59749d9a6.mp3"
+  },
+  {
+   "voice": "m2",
+   "text": "सही बात है, ये टपरी तो थेरेपी है",
+   "file": "voice2/1a6ac3127c.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "आज ट्रैफिक ने तो हद कर दी, एक घंटा लग गया",
+   "file": "voice2/602aa490b1.mp3"
+  },
+  {
+   "voice": "m2",
+   "text": "फ्लाईओवर का काम कब ख़त्म होगा, पता नहीं",
+   "file": "voice2/c2c12557be.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "हर साल बस यही सुनते हैं",
+   "file": "voice2/5454623bc7.mp3"
+  },
+  {
+   "voice": "m2",
+   "text": "चलो, कम से कम चाय तो मिल गई यहाँ",
+   "file": "voice2/cfdf69d5ba.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "बेटे का रिज़ल्ट आया कल",
+   "file": "voice2/41d8a0eb1c.mp3"
+  },
+  {
+   "voice": "m2",
+   "text": "अरे वाह! कैसा रहा?",
+   "file": "voice2/7de3b2c7d5.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "अच्छे नंबर आए, पर अब कह रहा है मोबाइल चाहिए",
+   "file": "voice2/92365fb23a.mp3"
+  },
+  {
+   "voice": "m2",
+   "text": "हाहा, ये तो हर घर की कहानी है",
+   "file": "voice2/366fb63582.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "नई फ़िल्म देखी है क्या?",
+   "file": "voice2/e056260402.mp3"
+  },
+  {
+   "voice": "m2",
+   "text": "अभी नहीं, सुना है गाने बहुत अच्छे हैं",
+   "file": "voice2/952e60575f.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "गाने तो पुराने वाले ही बेस्ट थे",
+   "file": "voice2/842dfdd485.mp3"
+  },
+  {
+   "voice": "m2",
+   "text": "सही कह रहा है, किशोर कुमार की बात ही अलग थी",
+   "file": "voice2/1b5fce587a.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "दिवाली आने वाली है, बाज़ार में बड़ी भीड़ होगी",
+   "file": "voice2/27b21a5743.mp3"
+  },
+  {
+   "voice": "m2",
+   "text": "हाँ, अभी से दुकानें सज गई हैं",
+   "file": "voice2/f9a214907d.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "इस बार मिठाई घर पर ही बनवाएँगे",
+   "file": "voice2/2f76be8bb7.mp3"
+  },
+  {
+   "voice": "m2",
+   "text": "तो हमें भी बुला लेना",
+   "file": "voice2/a605e680d1.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "टमाटर देखा, कितने के हो गए हैं?",
+   "file": "voice2/7dd99ab793.mp3"
+  },
+  {
+   "voice": "m2",
+   "text": "अरे मत पूछ, सब्ज़ी लेने जाओ तो जेब हल्की हो जाती है",
+   "file": "voice2/c8540d2f5d.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "आजकल हर चीज़ महँगी हो गई है",
+   "file": "voice2/c0b3e36685.mp3"
+  },
+  {
+   "voice": "m2",
+   "text": "इसीलिए तो चाय पर ही गुज़ारा है",
+   "file": "voice2/7bc5483626.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "कल रात बिजली गई थी, पूरी रात गर्मी में कटी",
+   "file": "voice2/67275bfa2d.mp3"
+  },
+  {
+   "voice": "m2",
+   "text": "हमारे यहाँ भी, दो घंटे बाद आई",
+   "file": "voice2/f63d81dd16.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "इन्वर्टर लगवा लेना चाहिए",
+   "file": "voice2/43b3a83903.mp3"
+  },
+  {
+   "voice": "m2",
+   "text": "पहले चाय पिला, फिर इन्वर्टर की बात करेंगे",
+   "file": "voice2/b8478fe5c6.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "याद है, स्कूल के दिनों में यहीं बैठते थे?",
+   "file": "voice2/cdaa56681b.mp3"
+  },
+  {
+   "voice": "m2",
+   "text": "हाँ, तब चाय पाँच रुपये की थी",
+   "file": "voice2/8e41eceb23.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "और समोसे के साथ चटनी मुफ़्त मिलती थी",
+   "file": "voice2/db9d424a00.mp3"
+  },
+  {
+   "voice": "m2",
+   "text": "वो दिन भी क्या दिन थे",
+   "file": "voice2/87125c2f2c.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "सुबह की सैर शुरू की है मैंने",
+   "file": "voice2/2252d62e16.mp3"
+  },
+  {
+   "voice": "m2",
+   "text": "तू? कितने दिन चलेगी ये सैर?",
+   "file": "voice2/8b2d1936a7.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "इस बार पक्का, पूरे सात दिन हो गए",
+   "file": "voice2/29b1ca65bb.mp3"
+  },
+  {
+   "voice": "m2",
+   "text": "सात दिन? अब तो चाय भी पीने दे",
+   "file": "voice2/f765558f78.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "शर्मा जी का नया घर देखा?",
+   "file": "voice2/ed3af44979.mp3"
+  },
+  {
+   "voice": "m2",
+   "text": "हाँ, पूरा पेंट कराया है, चमक रहा है",
+   "file": "voice2/a5df312c9f.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "सुना है गृह प्रवेश है इतवार को",
+   "file": "voice2/f70edac324.mp3"
+  },
+  {
+   "voice": "m2",
+   "text": "तो मिठाई पक्की",
+   "file": "voice2/a9614f542d.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "तूने वो सूट लिया जो कल दिखाया था?",
+   "file": "voice2/307bfd7fab.mp3"
+  },
+  {
+   "voice": "f2",
+   "text": "हाँ, पर रंग थोड़ा अलग निकला",
+   "file": "voice2/2f6029e176.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "तो वापस कर दे ना",
+   "file": "voice2/e6f5e59c35.mp3"
+  },
+  {
+   "voice": "f2",
+   "text": "देखती हूँ, पहले चाय तो पी लूँ",
+   "file": "voice2/71473823af.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "आज ऑफिस से जल्दी निकल गई मैं",
+   "file": "voice2/19b4da3cfc.mp3"
+  },
+  {
+   "voice": "f2",
+   "text": "अच्छा किया, रोज़ देर तक बैठती है",
+   "file": "voice2/904f871dc3.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "बस, थोड़ी चाय और गपशप का मन था",
+   "file": "voice2/4bd986ac1b.mp3"
+  },
+  {
+   "voice": "f2",
+   "text": "सही है! यहाँ की चाय तो कमाल है",
+   "file": "voice2/f507bda491.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "बेटी का एडमिशन हो गया आख़िर",
+   "file": "voice2/daad70b2ca.mp3"
+  },
+  {
+   "voice": "f2",
+   "text": "अरे वाह, बधाई हो!",
+   "file": "voice2/074be480fd.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "बस अब फ़ीस की चिंता है",
+   "file": "voice2/b6624fa829.mp3"
+  },
+  {
+   "voice": "f2",
+   "text": "सब हो जाएगा, तू टेंशन मत ले",
+   "file": "voice2/3cad1a4e02.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "सुनो, कल की मीटिंग का क्या हुआ?",
+   "file": "voice2/e5c0e72c0d.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "टल गई है, अब शुक्रवार को होगी",
+   "file": "voice2/da0c5855fb.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "चलो अच्छा हुआ, आज चैन से चाय पीते हैं",
+   "file": "voice2/fbea978ab3.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "हाँ, आज काम की कोई बात नहीं",
+   "file": "voice2/a3854fdd00.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "भैया, दो चाय देना",
+   "file": "voice2/18c50c4087.mp3"
+  },
+  {
+   "voice": "o",
+   "text": "अभी लाया",
+   "file": "voice2/e4dc1f4ba0.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "एक कटिंग चाय",
+   "file": "voice2/5bc17ddd47.mp3"
+  },
+  {
+   "voice": "o",
+   "text": "आ रही है",
+   "file": "voice2/ed08cd30de.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "भैया, अदरक वाली चाय",
+   "file": "voice2/fb02fbdfb1.mp3"
+  },
+  {
+   "voice": "o",
+   "text": "बस दो मिनट",
+   "file": "voice2/7adb41f6ae.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "भैया, दो चाय देना",
+   "file": "voice2/c1984c4433.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "एक कटिंग चाय",
+   "file": "voice2/60a6e1c618.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "भैया, अदरक वाली चाय",
+   "file": "voice2/7a397bd2ab.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "भैया, एक कुरकुरे देना",
+   "file": "voice2/2e6bf0cf1a.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "भैया, एक कुरकुरे देना",
+   "file": "voice2/dfb137d038.mp3"
+  },
+  {
+   "voice": "o",
+   "text": "मसाला या चीज़?",
+   "file": "voice2/eae1034e78.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "मसाला",
+   "file": "voice2/7ea5b17be0.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "मसाला",
+   "file": "voice2/53b3ea0f4c.mp3"
+  },
+  {
+   "voice": "o",
+   "text": "ये लो, दस रुपये",
+   "file": "voice2/f469bf5c20.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "पारले-जी है क्या?",
+   "file": "voice2/592b89839c.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "पारले-जी है क्या?",
+   "file": "voice2/56f270814b.mp3"
+  },
+  {
+   "voice": "o",
+   "text": "है, अभी निकालता हूँ",
+   "file": "voice2/be386fbbca.mp3"
+  },
+  {
+   "voice": "o",
+   "text": "ये लो, पाँच रुपये",
+   "file": "voice2/fafee4d351.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "एक ठंडा चाहिए",
+   "file": "voice2/76d921bb60.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "एक ठंडा चाहिए",
+   "file": "voice2/6dd885a643.mp3"
+  },
+  {
+   "voice": "o",
+   "text": "कौन सा, कोला?",
+   "file": "voice2/c383c425b9.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "हाँ, एकदम ठंडा वाला",
+   "file": "voice2/9fce7b8750.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "हाँ, एकदम ठंडा वाला",
+   "file": "voice2/c20c4f4bd1.mp3"
+  },
+  {
+   "voice": "o",
+   "text": "लो, बीस रुपये",
+   "file": "voice2/0362f319f5.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "दो समोसे, गरमा-गरम",
+   "file": "voice2/698e8554ee.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "दो समोसे, गरमा-गरम",
+   "file": "voice2/22cd412dac.mp3"
+  },
+  {
+   "voice": "o",
+   "text": "अभी निकले हैं, चटनी लगा दूँ?",
+   "file": "voice2/b3534a8ce7.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "हाँ, खूब सारी",
+   "file": "voice2/fd43273132.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "हाँ, खूब सारी",
+   "file": "voice2/ae4e36646a.mp3"
+  },
+  {
+   "voice": "o",
+   "text": "ये लो, तीस रुपये",
+   "file": "voice2/59a6684078.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "भैया, दो चाय पार्सल",
+   "file": "voice2/6445bf1fc4.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "भैया, दो चाय पार्सल",
+   "file": "voice2/705dd8f1da.mp3"
+  },
+  {
+   "voice": "o",
+   "text": "अभी बनाता हूँ, दो मिनट रुको",
+   "file": "voice2/4d99b439e1.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "ठीक है, ज़रा जल्दी करना",
+   "file": "voice2/141747d7d0.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "ठीक है, ज़रा जल्दी करना",
+   "file": "voice2/1d080c8011.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "यू-पी-आई कर दूँ?",
+   "file": "voice2/5e6a96afa6.mp3"
+  },
+  {
+   "voice": "o",
+   "text": "हाँ, यहाँ स्कैन कर लो",
+   "file": "voice2/e702cf8416.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "ये लो पैसे",
+   "file": "voice2/321b72a109.mp3"
+  },
+  {
+   "voice": "o",
+   "text": "छुट्टे हैं ना?",
+   "file": "voice2/23ba47b54d.mp3"
+  },
+  {
+   "voice": "o",
+   "text": "पेटीएम पर दस रुपये प्राप्त हुए",
+   "file": "voice2/01cbd77411.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "हाँ भाई, बोल",
+   "file": "voice2/984d61a8ee.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "हाँ भाई, बोल",
+   "file": "voice2/76eb675963.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "अच्छा, ठीक है",
+   "file": "voice2/009f002bc2.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "अच्छा, ठीक है",
+   "file": "voice2/92eb51a9ba.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "मैं टपरी पर हूँ, आधे घंटे में पहुँचता हूँ",
+   "file": "voice2/68c2fe4c6e.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "मैं टपरी पर हूँ, आधे घंटे में पहुँचता हूँ",
+   "file": "voice2/553ad6b99c.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "चल, रखता हूँ",
+   "file": "voice2/58fdad17a6.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "चल, रखता हूँ",
+   "file": "voice2/5357f4902e.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "शुक्रिया भैया",
+   "file": "voice2/2b82be11cf.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "शुक्रिया भैया",
+   "file": "voice2/49ac1345ce.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "धन्यवाद",
+   "file": "voice2/ad80353bdb.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "धन्यवाद",
+   "file": "voice2/8b887593b3.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "वाह, गरम है",
+   "file": "voice2/3b943d186f.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "वाह, गरम है",
+   "file": "voice2/eb40707f80.mp3"
+  },
+  {
+   "voice": "h",
+   "text": "लीजिए, गरम चाय",
+   "file": "voice2/3e684d4552.mp3"
+  },
+  {
+   "voice": "h",
+   "text": "ये लीजिए",
+   "file": "voice2/e837f330f7.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "हट! हट!",
+   "file": "voice2/50c72424c6.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "हट! हट!",
+   "file": "voice2/0e65254db3.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "अरे हट यहाँ से!",
+   "file": "voice2/a07f727fc0.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "अरे हट यहाँ से!",
+   "file": "voice2/ffc40a11d6.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "ए, भाग यहाँ से!",
+   "file": "voice2/dec3ad394b.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "ए, भाग यहाँ से!",
+   "file": "voice2/2998b343e7.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "अरे यार, ये कुत्ता…",
+   "file": "voice2/46cebaa741.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "अरे यार, ये कुत्ता…",
+   "file": "voice2/62706346a8.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "छी! यहीं कर दिया!",
+   "file": "voice2/dce000b15b.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "छी! यहीं कर दिया!",
+   "file": "voice2/d3e7c11912.mp3"
+  },
+  {
+   "voice": "o",
+   "text": "समोसे अभी निकले हैं, गरमा-गरम!",
+   "file": "voice2/850064e379.mp3"
+  }
+ ],
+ "stillMissing": [
+  {
+   "voice": "m",
+   "text": "हट! हट!",
+   "file": "voice2/50c72424c6.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "हट! हट!",
+   "file": "voice2/0e65254db3.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "अरे हट यहाँ से!",
+   "file": "voice2/a07f727fc0.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "अरे हट यहाँ से!",
+   "file": "voice2/ffc40a11d6.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "ए, भाग यहाँ से!",
+   "file": "voice2/dec3ad394b.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "ए, भाग यहाँ से!",
+   "file": "voice2/2998b343e7.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "अरे यार, ये कुत्ता…",
+   "file": "voice2/46cebaa741.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "अरे यार, ये कुत्ता…",
+   "file": "voice2/62706346a8.mp3"
+  },
+  {
+   "voice": "m",
+   "text": "छी! यहीं कर दिया!",
+   "file": "voice2/dce000b15b.mp3"
+  },
+  {
+   "voice": "f",
+   "text": "छी! यहीं कर दिया!",
+   "file": "voice2/d3e7c11912.mp3"
+  }
+ ]
+}

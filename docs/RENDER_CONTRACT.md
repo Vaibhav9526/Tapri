@@ -1,0 +1,15 @@
+# Render contract (V2): game-space 480x320, native raster 960x640
+
+* **Sim units (su)** = the gameplay coordinate system. `Art.L` keeps ALL its current numbers (480x320 su). Gameplay code (owner/crowd/dog/core/main) never changes units.
+* **Render px (rp)** = the canvas raster. `Art.K = 2` (rp per su), `Art.RW = L.W*K = 960`, `Art.RH = L.H*K = 640`. Until the art session sets `Art.K`, everything falls back to K=1 (480x320).
+* **Layers**: every canvas built by `Art.build()` (`sky far back front furnBack tables canopy emit`, `glassLayer()`, foliage sprites, `Art.mk()` default size) is RW x RH in rp. `api.P/E/bx/disc/line/speckle/pixelText`, `api.mk(w,h)`, and all env/theme layer functions draw in **rp** natively. Dynamic hooks get a plain ctx of RW x RH, no transform, and draw in rp.
+  To place something at a gameplay anchor: `x_rp = L.something * Art.K`.
+* **Actors**: `Sprites.BW/BH/ORIGX/ORIGY` are rp (proposal: 340/300/170/252; ORIG = the foot point). `main.drawActor(fn, ax, ay)` takes **su** and blits at `round(ax*K) - ORIGX, round(ay*K) - ORIGY`; shadow radius option is su; outline width/colour come from the theme in **rp**.
+  * **Inputs** to `Sprites.stand/sit` stay in **su**, local to the foot point: `pose.arms.L/R` hand targets, `lean`, `dip`, `sway`, `headDy`, `dy`. Dimensionless values (phase, crouch 0..1, expr, look, fx/fy) unchanged. The rig multiplies by K internally.
+  * **Return values** (`hand, lhand, handL, handR, head, shY, headTop, sx0, sh`) are in **rp**, local to the foot point (they only feed `Sprites.props`). The gameplay code multiplies its own su offsets by `Art.K` when it adds to them.
+  * **`Sprites.metrics(style, pose, seated=false)`** (new, you add it) returns **su**, local to the foot point, using the exact same measurement as stand/sit: `{ shY, headTop, mouth:[x,y], ear:[x,y], chest:[x,y], restL:[x,y], restR:[x,y], hip, height, halfWidth }`. crowd.js `drawSeated` / `enjoyPose` / helper and the hit-tests will consume it (with a fallback to today's numbers while it does not exist).
+  * `Sprites.props.*`, `px`, `pe`, `limb`, `begin`, `setG`: **rp** (native drawing primitives).
+* **Stage (stage.js)**: owned by the art session. It reads gameplay state in **su** (`Tapri.W`, `Tapri.parts`, `Tapri.radio`, `Tapri.sparrows`, `Tapri.dog`, `Tapri.owner`, `Tapri.flies`, `Tapri.seatItems`, `Tapri.people`) and draws in rp (multiply by `Art.K`). It also owns the dog's art (`dog.draw`, `dog.drawPuddles`) and the owner's costume/held tools (`ownerExtra`, `drawHeld`). Function names/signatures listed at the top of stage.js must keep working.
+* **Lighting**: `L.lamps` stay su; `main.js` draws `Art.glowSprite(l.r*K, rgb)` at `(l.x-l.r)*K`. `Art.glowSprite(radiusRp, rgb)` returns a sprite of that radius.
+* **Camera / bubbles / hit-tests / mouse** stay in su (stage CSS size = L.W*S x L.H*S; the canvas is simply a higher-resolution backing store).
+* Switch-over: the art session sets `Art.K = 2` (and RW/RH) in art.js **only after** the Claude session says "port ready". The gameplay port is K-agnostic, so the site keeps working at K=1 in the meantime.

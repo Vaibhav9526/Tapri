@@ -1,0 +1,98 @@
+{
+ "dir": "site/audio/sfx",
+ "naming": "<name>_<n>.mp3 (n = 1..count)",
+ "loopDir": "site/audio/amb (loops: name.mp3)",
+ "items": [
+  {
+   "name": "samosa_fry",
+   "count": 1,
+   "seconds": 8,
+   "loop": true,
+   "prompt": "samosas frying in hot oil in a kadhai, steady sizzle and bubbling, tea stall, seamless loop"
+  },
+  {
+   "name": "chips_tear",
+   "count": 2,
+   "seconds": 1.5,
+   "loop": false,
+   "prompt": "a snack chips packet being torn open, crinkly foil rip"
+  },
+  {
+   "name": "box_rustle",
+   "count": 1,
+   "seconds": 2,
+   "loop": false,
+   "prompt": "hand rummaging in a cardboard box of biscuit packets, rustling"
+  },
+  {
+   "name": "cloth_swish",
+   "count": 2,
+   "seconds": 1,
+   "loop": false,
+   "prompt": "a cloth towel swishing through the air quickly, shooing flies"
+  },
+  {
+   "name": "coins",
+   "count": 2,
+   "seconds": 1.5,
+   "loop": false,
+   "prompt": "a few small coins dropped onto a metal counter and picked up"
+  },
+  {
+   "name": "note_rustle",
+   "count": 1,
+   "seconds": 1.2,
+   "loop": false,
+   "prompt": "paper money notes being counted and folded, soft rustle"
+  },
+  {
+   "name": "match_strike",
+   "count": 1,
+   "seconds": 1.5,
+   "loop": false,
+   "prompt": "a matchstick striking and flaring, short whoosh, then shaken out"
+  },
+  {
+   "name": "cola_open",
+   "count": 1,
+   "seconds": 2,
+   "loop": false,
+   "prompt": "a glass cola bottle cap popping off with an opener, a fizz hiss"
+  },
+  {
+   "name": "glass_wash",
+   "count": 1,
+   "seconds": 6,
+   "loop": true,
+   "prompt": "tea glasses being washed in a plastic tub of water, splashing and clinking, seamless loop"
+  },
+  {
+   "name": "stool_scrape",
+   "count": 1,
+   "seconds": 1.2,
+   "loop": false,
+   "prompt": "a plastic stool scraping on a stone pavement"
+  },
+  {
+   "name": "table_set",
+   "count": 2,
+   "seconds": 1,
+   "loop": false,
+   "prompt": "a glass tea cup being set down on a wooden table, soft clunk"
+  },
+  {
+   "name": "kettle_lid",
+   "count": 1,
+   "seconds": 1.5,
+   "loop": false,
+   "prompt": "a steel tea kettle lid rattling as the milk tea boils up, steam hiss"
+  },
+  {
+   "name": "sizzle_drop",
+   "count": 1,
+   "seconds": 2,
+   "loop": false,
+   "prompt": "a samosa dropped into hot oil, a loud sizzle splash"
+  }
+ ]
+}
