@@ -214,14 +214,14 @@ function facePose(s, pose, m) { return { fx: pose.fx ?? (m.moving ? m.d * 1.5 : 
 function stand(gctx, s, pose = {}, light) {
   begin(gctx, light); const m = measure(s, pose), { legs, shY, sx, h, moving, d, ph, amp } = m, hipY = m.hip[1], wide = m.halfWidth;
   const farX = sx - (moving ? d * 5.5 : wide), nearX = sx + (moving ? d * 6.5 : wide);
-  const targets = ['L', 'R'].map((side, i) => { const swing = ph + (i ? 0 : Math.PI), ang = Math.sin(swing) * .5, shx = i ? nearX : farX, len = 29.4 - Math.max(0, Math.sin(ang)) * 3.2, rest = i ? m.restR : m.restL, walk = [shx + d * Math.sin(ang) * len, shY + 3 + Math.cos(ang) * len], fallback = [rest[0] + (walk[0] - rest[0]) * amp, rest[1] + (walk[1] - rest[1]) * amp]; return sm(pose, side, pose.arms?.[side] || fallback).map(v => v * K); });
+  const targets = ['L', 'R'].map((side, i) => { const swing = ph + (i ? 0 : Math.PI), ang = Math.sin(swing) * .5, shx = i ? nearX : farX, len = 31.2 - Math.max(0, Math.sin(ang)) * 3.4, rest = i ? m.restR : m.restL, walk = [shx + d * Math.sin(ang) * len, shY + 3 + Math.cos(ang) * len], fallback = [rest[0] + (walk[0] - rest[0]) * amp, rest[1] + (walk[1] - rest[1]) * amp]; return sm(pose, side, pose.arms?.[side] || fallback).map(v => v * K); });
   const far = HK('arm')(s, farX * K, (shY + 3) * K, ...targets[0], moving ? d : 1, true);
   const legDraw = (l, i) => { const col = i ? s.pants : SH(s.pants, -.15), offset = (moving ? 1.8 : 4.5) * (i ? 1 : -1), xx = m.hip[0] + offset, width = s.wrap ? 20 : (s.mass || 1) * 15;
     limb(xx * K, hipY * K, (xx + l.kx) * K, (hipY + l.ky) * K, width * Z, col); limb((xx + l.kx) * K, (hipY + l.ky) * K, (xx + l.ax) * K, (hipY + l.ay) * K, (s.wrap ? 13 : 11) * Z, col); px((xx + l.kx - 2) * K, (hipY + l.ky) * K, 5 * K, Z, SH(col, -.2)); shoes(s, (xx + l.ax) * K, (hipY + l.ay) * K, d, !i); };
   legDraw(legs[0], 0); const long = ['kurta', 'dhoti', 'turban'].includes(s.outfit); HK('torso')(s, sx * K, shY * K, (long ? 41 : 33) * h * K, !!moving, pose.extra); legDraw(legs[1], 1);
   if (s.wrap || s.outfit === 'saree') { const bottom = s.outfit === 'saree' ? -5 : hipY + 24 * h, col = s.outfit === 'saree' ? s.shirt : s.pants, start = hipY - 2; shape([[(sx - 9) * K, start * K], [(sx + 10) * K, start * K], [(sx + 9 + Math.sin(ph) * moving) * K, bottom * K], [(sx - 9 + Math.sin(ph) * moving) * K, bottom * K]], col); for (let j = 0; j < 4; j++) px((sx - 6 + j * 4) * K, (start + 4) * K, Z, Math.max(2, (bottom - start - 7) * K), SH(col, j % 2 ? -.2 : .15)); px((sx - 9) * K, (bottom - 2) * K, 18 * K, 2 * K, s.dupatta || SH(col, -.18)); }
   px((sx - 3) * K, (shY - 4) * K, 6 * K, 5 * K, SH(s.skin, -.13)); HK('head')(s, m.headX * K, m.headTop * K, facePose(s, pose, m));
-  const near = HK('arm')(s, nearX * K, (shY + 3) * K, ...targets[1], moving ? -d : -1, false);
+  const near = HK('arm')(s, nearX * K, (shY + 3) * K, ...targets[1], moving ? d : -1, false);
   return { hx: m.hip[0] * K, hipY: hipY * K, shY: shY * K, hand: near, lhand: far, headTop: m.headTop * K, sx0: sx * K, mouth: m.mouth.map(v => v * K) };
 }
 // seated figure. origin = ground under the stool; seat top is 26px up. pose: {sx (sway), lean, look, expr, arms:{L,R}, legPose, tap, jig, headDy, fx, fy}
