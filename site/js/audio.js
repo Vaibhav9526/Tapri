@@ -7,8 +7,8 @@
 const TA = (() => {
   let envMix = { traffic: 1, birds: 1, crickets: 1, crowd: 1, rain: 1 }, outAn, ctx, master, comp, wet, buses = {}, loopNodes = {}, bank = {}, voiceMap = {}, bufCache = {}, started = false, muted = false, scene = 'day';
   let musicSrc = null, station = 'off', radioOn = true, ytPlaying = false, analyser, anaData, beatSm = 0, hissG, toneLP, musicIn;
-  const state = { master: 0.9, music: 0.45, crowd: 0.7, traffic: 0.5, rain: 0, nature: 0.5, chai: 0.55, voices: 0.75, crackle: 0.2 };
-  const BASE = { crowd: 2.2, traffic: 2.0, rain: 2.0, nature: 2.4, chai: 3.2, voices: 2.4, music: 3.0 };
+  const state = { master: 0.9, music: 0.45, crowd: 0.7, traffic: 0.5, rain: 0, nature: 0.5, chai: 0.55, voices: 0.75, crackle: 0.2, events: 0.4 };
+  const BASE = { crowd: 2.2, traffic: 2.0, rain: 2.0, nature: 2.4, chai: 3.2, voices: 2.4, music: 3.0, events: 2.0 };
   const SCENE_MIX = { // how much of each bed a time of day wants
     morning: { traffic: 0.8, birds: 1.0, crickets: 0, crowd: 0.8 }, day: { traffic: 1.0, birds: 0.8, crickets: 0, crowd: 1.0 },
     dusk: { traffic: 0.9, birds: 0.25, crickets: 0.6, crowd: 1.0 }, night: { traffic: 0.55, birds: 0, crickets: 1.0, crowd: 0.8 }
@@ -48,6 +48,26 @@ const TA = (() => {
     set('crowd', 0.9 * m.crowd * envMix.crowd); set('gossip', 0.8 * m.crowd * envMix.crowd); set('traffic', 0.95 * m.traffic * envMix.traffic); set('birds', m.birds * envMix.birds); set('crickets', m.crickets * envMix.crickets); set('rain', 1); set('stove', 0.8);
   }
 
+
+  /* ---- street moments: small synthesized happenings (thunder, wind, cycle bell, truck horn, cooker whistle) at random intervals ---- */
+  let evTimer = 0;
+  function evNoise(t, dur) { const s = ctx.createBufferSource(); s.buffer = noise(Math.ceil(dur) + 1); s.start(t); s.stop(t + dur + 0.1); return s; }
+  function evEnv(t, a, peak, d) { const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(peak, t + a); g.gain.exponentialRampToValueAtTime(0.0001, t + a + d); return g; }
+  function evOut(node, pan) { const p = ctx.createStereoPanner(); p.pan.value = pan; node.connect(p); p.connect(buses.events); }
+  const EVENTS = {
+    thunder(t, pan) { const n = evNoise(t, 6), f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.setValueAtTime(420, t); f.frequency.exponentialRampToValueAtTime(70, t + 4.5); const g = evEnv(t, 0.25, 1.0, 4.8); n.connect(f); f.connect(g); evOut(g, pan);
+      const n2 = evNoise(t + 1.6, 4), f2 = ctx.createBiquadFilter(); f2.type = 'lowpass'; f2.frequency.value = 160; const g2 = evEnv(t + 1.6, 0.4, 0.55, 3); n2.connect(f2); f2.connect(g2); evOut(g2, pan * 0.5); },
+    wind(t, pan) { const n = evNoise(t, 7), f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 0.9; f.frequency.setValueAtTime(380, t); f.frequency.linearRampToValueAtTime(900, t + 3); f.frequency.linearRampToValueAtTime(300, t + 6.5); const g = evEnv(t, 3, 0.28, 3.5); n.connect(f); f.connect(g); evOut(g, pan); },
+    bell(t, pan) { const n = 2 + Math.floor(Math.random() * 3); for (let i = 0; i < n; i++) { const s = t + i * 0.17; for (const fr of [2350, 3180]) { const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = fr; const g = evEnv(s, 0.004, 0.12, 0.55); o.connect(g); evOut(g, pan); o.start(s); o.stop(s + 0.7); } } },
+    horn(t, pan) { const g = evEnv(t, 0.06, 0.2, 1.1), lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1100; for (const fr of [196, 247]) { const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.setValueAtTime(fr * 1.04, t); o.frequency.exponentialRampToValueAtTime(fr * 0.96, t + 1.4); o.connect(lp); o.start(t); o.stop(t + 1.5); } lp.connect(g); evOut(g, pan); },
+    whistle(t, pan) { for (let i = 0; i < 2; i++) { const s = t + i * 1.5, n = evNoise(s, 1.3), bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 3100; bp.Q.value = 14; const g = evEnv(s, 0.15, 0.16, 1.0); n.connect(bp); bp.connect(g); evOut(g, pan); } }
+  };
+  function pickEvent() {
+    const w = { wind: 1 }; if (state.rain > 0.25) w.thunder = state.rain * 3; if (state.traffic > 0.12) { w.horn = scene === 'night' ? 0.6 : 1.1; if (scene !== 'night') w.bell = 1.4; } if (scene !== 'night') w.whistle = scene === 'morning' ? 1.2 : 0.6;
+    const ks = Object.keys(w), tot = ks.reduce((a, k) => a + w[k], 0); let r = Math.random() * tot; for (const k of ks) { r -= w[k]; if (r <= 0) return k; } return ks[0];
+  }
+  function nextEvent() { if (!started) return; const e = state.events; clearTimeout(evTimer); evTimer = setTimeout(() => { if (state.events >= 0.03) api.fire(); nextEvent(); }, e < 0.03 ? 4000 : rnd(12000, 34000) / (0.35 + e * 2.2)); }
+
   async function loadBank() {
     for (const [n, k] of Object.entries(SFX)) for (let i = 1; i <= k; i++) { const b = await load(`audio/sfx/${n}_${i}.mp3`); if (b) (bank[n] = bank[n] || []).push(b); }
     try { const r = await fetch('audio/voice2/manifest.json'); if (r.ok) voiceMap = (await r.json()).lines || {}; } catch (e) {}
@@ -60,18 +80,20 @@ const TA = (() => {
       if (started) return; ctx = new (window.AudioContext || window.webkitAudioContext)();
       master = ctx.createGain(); master.gain.value = muted ? 0 : state.master; comp = ctx.createDynamicsCompressor(); comp.threshold.value = -16; comp.ratio.value = 3.2; comp.attack.value = 0.01; comp.release.value = 0.3; master.connect(comp); comp.connect(ctx.destination); outAn = ctx.createAnalyser(); outAn.fftSize = 2048; comp.connect(outAn);
       wet = ctx.createConvolver(); wet.buffer = impulse(); const wg = ctx.createGain(); wg.gain.value = 0.7; wet.connect(wg); wg.connect(master);
-      for (const k of ['crowd', 'traffic', 'rain', 'nature', 'chai', 'voices']) bus(k);
+      for (const k of ['crowd', 'traffic', 'rain', 'nature', 'chai', 'voices', 'events']) bus(k);
       // radio chain
       musicIn = ctx.createGain(); const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 160; const pk = ctx.createBiquadFilter(); pk.type = 'peaking'; pk.frequency.value = 1200; pk.gain.value = 2.5; pk.Q.value = 0.8;
       toneLP = ctx.createBiquadFilter(); toneLP.type = 'lowpass'; toneLP.frequency.value = 5500; const mg = ctx.createGain(); mg.gain.value = 0; buses.music = mg; musicIn.connect(hp); hp.connect(pk); pk.connect(toneLP); toneLP.connect(mg); mg.connect(master);
       analyser = ctx.createAnalyser(); analyser.fftSize = 512; anaData = new Uint8Array(analyser.frequencyBinCount); mg.connect(analyser);
       const hs = ctx.createBufferSource(); hs.buffer = noise(); hs.loop = true; const hb = ctx.createBiquadFilter(); hb.type = 'bandpass'; hb.frequency.value = 2600; hb.Q.value = 0.5; hissG = ctx.createGain(); hissG.gain.value = 0; hs.connect(hb); hb.connect(hissG); hissG.connect(master); hs.start();
-      started = true; ['crowd', 'traffic', 'rain', 'nature', 'chai', 'voices', 'music'].forEach(applyBus);
+      started = true; ['crowd', 'traffic', 'rain', 'nature', 'chai', 'voices', 'music', 'events'].forEach(applyBus); nextEvent();
       bed('crowd', 'audio/amb/crowd.mp3', 'crowd', 2, 0.6); bed('gossip', 'audio/amb/gossip.mp3', 'crowd', 2, 0.5); bed('traffic', 'audio/amb/traffic.mp3', 'traffic', 1, 0.9); bed('rain', 'audio/amb/rain.mp3', 'rain', 2, 0.6);
       bed('birds', 'audio/amb/birds.mp3', 'nature', 2, 0.7); bed('crickets', 'audio/amb/crickets.mp3', 'nature', 2, 0.7); bed('stove', 'audio/amb/stove.mp3', 'chai', 1, 0.7);
       bed('samosa_fry', 'audio/amb/samosa_fry.mp3', 'chai', 1, 1.0); bed('glass_wash', 'audio/amb/glass_wash.mp3', 'chai', 1, 1.0);
       setTimeout(() => { setLoop('samosa_fry', false); setLoop('glass_wash', false); }, 0); loadBank();
     },
+    /* play a street moment now (or a random fitting one); returns its name */
+    fire(kind) { if (!started || muted) return false; const k = kind || pickEvent(); if (!EVENTS[k]) return false; EVENTS[k](ctx.currentTime + (k === 'thunder' ? 0.9 : 0.02), rnd(-0.8, 0.8)); emit('event', k); return k; },
     resume() { if (ctx && ctx.state !== 'running') ctx.resume(); },
     setMuted(m) { muted = !!m; if (master) master.gain.setTargetAtTime(muted ? 0 : state.master, ctx.currentTime, 0.08); emit('mute', muted); },
     toggleMute() { api.setMuted(!muted); return muted; },

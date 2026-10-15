@@ -72,7 +72,7 @@ class Person {
     if (this.act === 'call' && T > this.callAt) { const lines = D.calls; if (this.callIdx < lines.length) { Tapri.say(this, this.female ? 'f' : 'm', lines[this.callIdx][0], { kind: 'call' }); this.callAt = T + rnd(3.4, 5.2); this.callIdx++; } else { this.callAt = T + 99; this.actUntil = Math.min(this.actUntil, T + 1.2); } }
     if ((this.act === 'phone' || this.act === 'text') && Math.random() < dt * 0.09) { TA.sfx('phone_notify', { vol: 0.5, pan: pan(this.x) }); this.smileUntil = T + rnd(1.5, 3); if (Math.random() < 0.25) this.laughUntil = T + 0.9; }
     // groups and leaving
-    if (T > this.life && !this.glass && !this.plate && this.act === 'idle' && !this.wants) { this.state = 'standup'; this.t0 = T; Tapri.convoAbort(this); }
+    if (T > this.life && !Tapri.convoWith(this) && !this.glass && !this.plate && this.act === 'idle' && !this.wants) { this.state = 'standup'; this.t0 = T; Tapri.convoAbort(this); }
     // body language: sometimes lean on table, look around
     if (T > this.nextAct && this.act === 'idle' && !this.glass) this.nextAct = T + rnd(6, 14);
   }
@@ -240,7 +240,7 @@ function startConvo() {
   const T = Tapri.T, pairs = [[0, 1], [2, 3], [4, 5]].map(([i, j]) => [L.seats[i].p, L.seats[j].p]).filter(([a, b]) => a && b && a.canChat() && b.canChat() && Math.abs(a.x - b.x) < 80);
   if (!pairs.length) { convo.next = T + 4; return; }
   const [a, b] = pick(pairs); const g = a.female && b.female ? 'ff' : (!a.female && !b.female ? 'mm' : 'mf'); const opts = D.chats.map((c, i) => [c, i]).filter(([c, i]) => c.g === g && i !== convo.last); if (!opts.length) { convo.next = T + 6; return; }
-  const [chat, ci] = pick(opts); convo.last = ci; const male = g === 'mf' ? (a.female ? b : a) : a, female = g === 'mf' ? (a.female ? a : b) : b;
+  const longs = opts.filter(([c]) => c.long), [chat, ci] = (longs.length && Math.random() < 0.7) ? pick(longs) : pick(opts); convo.last = ci; const male = g === 'mf' ? (a.female ? b : a) : a, female = g === 'mf' ? (a.female ? a : b) : b;
   convo.cur = { a: g === 'mf' ? male : a, b: g === 'mf' ? female : b, chat, i: 0, tNext: T + 0.4 };
 }
 function updateConvo() {
@@ -248,9 +248,10 @@ function updateConvo() {
   if (c.a.dead || c.b.dead || c.a.state !== 'seated' || c.b.state !== 'seated') { convo.cur = null; convo.next = T + 6; return; }
   if (T < c.tNext) return;
   if (c.i >= c.chat.lines.length) { if (Math.random() < 0.7) { c.a.laughUntil = T + 1.6; c.b.laughUntil = T + 1.4; TA.sfx('laugh', { vol: 0.7, pan: pan((c.a.x + c.b.x) / 2) }); } convo.cur = null; convo.next = T + rnd(12, 26); return; }
-  const [s, text] = c.chat.lines[c.i], sp = s === 0 ? c.a : c.b, li = s === 0 ? c.b : c.a, v = D.voiceFor(c.chat.g, s);
+  const [s, text, mood] = c.chat.lines[c.i], sp = s === 0 ? c.a : c.b, li = s === 0 ? c.b : c.a, v = D.voiceFor(c.chat.g, s);
   const dur = Tapri.say(sp, v, text, { kind: 'say' }); sp.speaking = true; Tapri.after(dur * 0.8, () => { sp.speaking = false; }); li.lookAt = sp; li.lookUntil = T + dur + 0.6; sp.lookAt = li; sp.lookUntil = T + dur;
   if (Math.random() < 0.4) li.smileUntil = T + dur;
+  if (mood === 'laugh') { sp.laughUntil = T + Math.min(dur, 1.8); li.laughUntil = T + 1.4; TA.sfx('laugh', { vol: 0.5, pan: pan((c.a.x + c.b.x) / 2) }); } else if (mood === 'smile') { sp.smileUntil = T + dur; li.smileUntil = T + dur + 0.6; }
   c.i++; c.tNext = T + dur + rnd(0.4, 1.0);
 }
 

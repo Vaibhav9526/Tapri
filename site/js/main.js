@@ -171,8 +171,31 @@ function bindSlider(el, key, fn) { el.addEventListener('input', () => { const v 
 bindSlider($('vMusic'), 'music', v => { TA.set('music', v); ytVol(); }); bindSlider($('vTone'), 'tone', v => TA.setTone(v));
 document.querySelectorAll('[data-k]').forEach(el => bindSlider(el, el.dataset.k, v => TA.set(el.dataset.k, v)));
 function syncSliders() { $('vMusic').value = TA.state.music; $('vTone').value = store.get().tone ?? 0.5; document.querySelectorAll('[data-k]').forEach(el => el.value = TA.state[el.dataset.k]); }
-const PRESETS = { busy: { crowd: .7, voices: .75, traffic: .5, rain: 0, nature: .5, chai: .55, music: .45 }, calm: { crowd: .22, voices: .45, traffic: .14, rain: 0, nature: .55, chai: .35, music: .6 }, rain: { crowd: .3, voices: .5, traffic: .2, rain: .75, nature: .15, chai: .45, music: .5 }, music: { crowd: .06, voices: .2, traffic: .05, rain: 0, nature: .1, chai: .12, music: .8 } };
-document.querySelectorAll('#presets [data-p]').forEach(b => b.onclick = () => { TA.resume(); const p = PRESETS[b.dataset.p]; for (const k in p) TA.set(k, p[k]); rainTouched = true; syncSliders(); store.set({ mix: Object.assign({}, TA.state) }); ytVol(); });
+const PRESETS = { busy: { crowd: .7, voices: .75, traffic: .5, rain: 0, nature: .5, chai: .55, music: .45, events: .4 }, calm: { crowd: .22, voices: .45, traffic: .14, rain: 0, nature: .55, chai: .35, music: .6, events: .22 }, rain: { crowd: .3, voices: .5, traffic: .2, rain: .75, nature: .15, chai: .45, music: .5, events: .55 }, storm: { crowd: .2, voices: .35, traffic: .15, rain: .95, nature: .1, chai: .4, music: .4, events: .85, scene: 'dusk' }, night: { crowd: .25, voices: .4, traffic: .18, rain: 0, nature: .7, chai: .4, music: .55, events: .3, scene: 'night' }, mela: { crowd: 1, voices: .9, traffic: .75, rain: 0, nature: .3, chai: .75, music: .3, events: .7, scene: 'day' }, music: { crowd: .06, voices: .2, traffic: .05, rain: 0, nature: .1, chai: .12, music: .8, events: .08 } };
+document.querySelectorAll('#presets [data-p]').forEach(b => b.onclick = () => { TA.resume(); const p = PRESETS[b.dataset.p]; for (const k in p) if (k !== 'scene') TA.set(k, p[k]); rainTouched = true; if (p.scene) setScene(p.scene); syncSliders(); store.set({ mix: Object.assign({}, TA.state) }); ytVol(); toast(b.textContent.trim()); });
+
+/* ---- panel tabs, toast, sleep timer, now-playing pill, lightning, shortcuts ---- */
+function selTab(t) { document.querySelectorAll('#tabs [data-t]').forEach(x => x.classList.toggle('on', x.dataset.t === t)); document.querySelectorAll('#panel .tab').forEach(x => { x.hidden = x.dataset.tab !== t; }); store.set({ tab: t }); }
+document.querySelectorAll('#tabs [data-t]').forEach(b => b.onclick = () => selTab(b.dataset.t));
+function toast(m) { const t = $('toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove('on'), 1800); }
+let sleepAt = 0, sleepTick = 0, sleepBase = 0;
+function setSleep(min) {
+  clearInterval(sleepTick); sleepBase = 0; document.querySelectorAll('#sleep [data-m]').forEach(b => b.classList.toggle('on', +b.dataset.m === min)); $('sleepLeft').textContent = ''; if (!min) { sleepAt = 0; return; }
+  sleepAt = performance.now() + min * 60000; toast('Radio sleeps in ' + min + ' min');
+  sleepTick = setInterval(() => { const left = (sleepAt - performance.now()) / 1000; $('sleepLeft').textContent = left > 60 ? Math.ceil(left / 60) + ' min left' : Math.max(0, Math.ceil(left)) + ' s left';
+    if (left <= 15) { if (!sleepBase) sleepBase = TA.state.music || 0.001; TA.set('music', sleepBase * Math.max(0, left / 15)); ytVol(); }
+    if (left <= 0) { clearInterval(sleepTick); setRadio(false); TA.set('music', sleepBase); ytVol(); syncSliders(); $('sleepLeft').textContent = ''; document.querySelectorAll('#sleep [data-m]').forEach(b => b.classList.toggle('on', b.dataset.m === '0')); toast('Radio off — shabba khair'); } }, 1000);
+}
+document.querySelectorAll('#sleep [data-m]').forEach(b => b.onclick = () => setSleep(+b.dataset.m));
+$('evTest').onclick = () => { TA.resume(); TA.fire(); };
+$('pill').onclick = () => { TA.resume(); togglePanel(true); selTab('radio'); };
+const SCN = { morning: 'Morning', day: 'Day', dusk: 'Dusk', night: 'Night' };
+setInterval(() => { $('pillTxt').textContent = $('sname').textContent; $('eq').classList.toggle('on', TA.isPlaying()); const E = Art.ENVS[world.env]; if (E) $('placeTxt').textContent = E.label + ' · ' + (SCN[sceneName] || ''); }, 700);
+TA.on('event', k => { if (k === 'thunder' && !matchMedia('(prefers-reduced-motion: reduce)').matches) { const f = $('flash'); f.classList.remove('go'); void f.offsetWidth; f.classList.add('go'); } });
+window.addEventListener('keydown', e => {
+  if (e.ctrlKey || e.metaKey || e.altKey || !started) return; if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName) && e.target.type !== 'range') return; const k = e.key.toLowerCase();
+  if (k === 'r') { TA.resume(); togglePanel(); } else if (k === 'w') toggleWorld(); else if (k >= '1' && k <= '4') setScene(['morning', 'day', 'dusk', 'night'][+k - 1]); else if (k === '0') setScene('auto');
+});
 
 /* ====================== YouTube ====================== */
 let yt = null, ytReady = false, ytId = '', ytApiReady = false;
@@ -193,7 +216,7 @@ $('ytNext').onclick = () => ytReady && yt.nextVideo(); $('ytPrev').onclick = () 
 
 /* ====================== boot ====================== */
 const saved = store.get();
-Object.keys(PRESETS.busy).forEach(k => { if (saved.mix && saved.mix[k] !== undefined) TA.state[k] = saved.mix[k]; }); if (saved.music !== undefined) TA.state.music = saved.music; if (saved.rain !== undefined) rainTouched = true; $('ytShuf').checked = !!saved.shuffle;
+Object.keys(PRESETS.busy).forEach(k => { if (saved.mix && saved.mix[k] !== undefined) TA.state[k] = saved.mix[k]; }); if (saved.music !== undefined) TA.state.music = saved.music; if (saved.rain !== undefined) rainTouched = true; $('ytShuf').checked = !!saved.shuffle; selTab(saved.tab || 'radio');
 async function boot() {
   try { await Promise.race([Promise.all([document.fonts.load('700 26px "Noto Sans Devanagari"'), document.fonts.load('500 8px "Noto Sans Devanagari"'), document.fonts.load('600 14px "Pixelify Sans"')]), new Promise(r => setTimeout(r, 1800))]); } catch (e) {}
   await loadWorldFiles(); const sw = store.get().world; if (sw) { if (Art.ENVS[sw.env]) world.env = sw.env; if (Art.THEMES[sw.theme]) world.theme = sw.theme; } if (!Art.ENVS[world.env]) world.env = 'city'; renderWorldUI();

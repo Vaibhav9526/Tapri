@@ -37,6 +37,7 @@
   const calls = [['हाँ भाई, बोल'], ['अच्छा, ठीक है'], ['मैं टपरी पर हूँ, आधे घंटे में पहुँचता हूँ'], ['चल, रखता हूँ']];
   const thanks = ['शुक्रिया भैया', 'धन्यवाद', 'वाह, गरम है']; const serve = ['लीजिए, गरम चाय', 'ये लीजिए']; const owner = ['समोसे अभी निकले हैं, गरमा-गरम!'];
   const shoo = ['हट! हट!', 'अरे हट यहाँ से!', 'ए, भाग यहाँ से!'], pee = ['अरे यार, ये कुत्ता…', 'छी! यहीं कर दिया!'];
+  (window.TAPRI_STORIES || []).forEach(st => chats.push({ g: st.g, id: st.id, title: st.title, long: true, lines: st.lines }));
   const V = { mm: ['m', 'm2'], ff: ['f', 'f2'], mf: ['m', 'f'] };
   function all() { const o = []; const add = (v, t) => o.push({ v, text: t });
     chats.forEach(c => c.lines.forEach(([s, t]) => add(V[c.g][s], t)));
