@@ -121,12 +121,12 @@ class Person {
   drawSeated(g, light, T, s, beat, playing) {
     const act = this.act, talk = T < this.talkUntil, lg = T < this.laughUntil, k = s.h, ax = Math.round(this.x), ay = GROUND;
     const down = act === 'phone' || act === 'text' || act === 'paper', lean = down ? 2 : talk ? 1 : 0, shake = lg ? (Math.sin(T * 30) > 0 ? 1 : 0) : 0;
-    const sway = playing && this.groover ? Math.round(Math.sin(T * 3 + this.seed)) : 0, hb = playing && beat > 0.45 && this.groover ? 1 : 0, tap = playing && this.tapper && Math.sin(T * Math.PI * 3.8 + this.seed) > 0.4 ? 2 : 0;
+    const sway = playing && this.groover ? Math.round(Math.sin(T * 3 + this.seed)) : 0, hb = playing && beat > 0.45 && this.groover ? 1 : 0, tap = playing && this.tapper ? Math.max(0, Math.sin(T * Math.PI * 3.8 + this.seed)) * 1.8 : 0;
     const breath = Math.sin(T * 1.5 + this.seed) > 0.2 ? 1 : 0, dyAdj = -breath + (act === 'idle' && this.idleMode === 'chin' ? 2 : 0);
     // geometry comes from the rig itself (Sprites.metrics, in sim units) so cups and phones always meet the face; fallback = the original rig's numbers
     const M = Sprites.metrics ? Sprites.metrics(s, { lean: lean + shake, dy: dyAdj }, true) : null, sc = M ? M.height / 96 : 1;
     const shY = M ? M.shY : (-28 - 30 * k) + lean + shake + dyAdj, headTop = (M ? M.headTop : shY - 17 * sc) + hb + (down ? 1 : 0), mouth = M ? [M.mouth[0] + sway, M.mouth[1] + hb + (down ? 2 : 0)] : [4 + sway, headTop + 11 + (down ? 2 : 0)];
-    const tL = [-12, -33], tR = [12, -33], pose = { sway, lean: lean + shake, dy: dyAdj, legPose: this.legPose, tap, jig: this.jig && !playing ? Math.round(Math.sin(T * 9 + this.seed)) : 0, look: this.look, fx: Math.round(this.look.x * 2), fy: down ? 1 : 0, headDy: hb, t: T, blink: T < this.blinkUntil, arms: {}, holder: this, dt: Tapri.dt, rate: 7 };
+    const tL = [-12, -33], tR = [12, -33], pose = { sway, lean: lean + shake, dy: dyAdj, legPose: this.legPose, tap, jig: this.jig && !playing ? Math.sin(T * 9 + this.seed) * 0.8 : 0, look: this.look, fx: Math.round(this.look.x * 2), fy: down ? 1 : 0, headDy: hb, t: T, blink: T < this.blinkUntil, arms: {}, holder: this, dt: Tapri.dt, rate: 7 };
     let rprop = null, lprop = null; const sit = Tapri.seatItems[this.idx], glassPos = [14, -33], platePos = [-14, -33];
     const sp = T - this.actT0;
     pose.expr = lg ? 'laugh' : T < this.smileUntil ? 'smile' : (talk || act === 'call') && T < this.talkUntil ? 'talk' : 'n';
