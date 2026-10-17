@@ -274,7 +274,7 @@ const saved = store.get();
 Object.keys(PRESETS.busy).forEach(k => { if (saved.mix && saved.mix[k] !== undefined) TA.state[k] = saved.mix[k]; }); if (saved.music !== undefined) TA.state.music = saved.music; if (saved.rain !== undefined) rainTouched = true; $('ytShuf').checked = !!saved.shuffle; selTab(saved.tab || 'radio');
 async function boot() {
   try { await Promise.race([Promise.all([document.fonts.load('700 26px "Noto Sans Devanagari"'), document.fonts.load('500 8px "Noto Sans Devanagari"'), document.fonts.load('600 14px "Pixelify Sans"')]), new Promise(r => setTimeout(r, 1800))]); } catch (e) {}
-  await loadWorldFiles(); const sw = store.get().world; if (sw) { if (Art.ENVS[sw.env]) world.env = sw.env; if (Art.THEMES[sw.theme]) world.theme = sw.theme; } if (!Art.ENVS[world.env]) world.env = 'city'; renderWorldUI();
+  await loadWorldFiles(); const sw = store.get().look >= 2 ? store.get().world : null; store.set({ look: 2 }); if (sw) { if (Art.ENVS[sw.env]) world.env = sw.env; if (Art.THEMES[sw.theme]) world.theme = sw.theme; } if (!Art.ENVS[world.env]) world.env = 'city'; renderWorldUI();
   layout(); setScene('auto'); Tapri.resetCrowd(); owner.start(); dog.reset(); requestAnimationFrame(loop);
 }
 const bdc = document.getElementById('bd'), bdx = bdc.getContext('2d'); let bdn = 0;
