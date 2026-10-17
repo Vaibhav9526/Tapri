@@ -15,5 +15,6 @@ window.TAPRI_WORLD_FILES = [
   'envs/desert.js',
   'envs/railway.js',
   'envs/mohalla-backdrops.js',
-  'envs/mohalla.js'
+  'envs/mohalla.js',
+  'envs/mohalla-painted.js'
 ];

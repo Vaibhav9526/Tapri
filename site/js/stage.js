@@ -6,7 +6,8 @@
 (() => {
 'use strict';
 // themes may redraw stage pieces: actors.stage = { caseTrays, pakoda, kachori, flames, kadhai, fryItems, oilBubbles, tub, sparrows, puddles, dog } — each gets (ctx in render px, data)
-const SH = name => Sprites.hooks.stage && Sprites.hooks.stage[name];
+// an environment can override too (env.stage wins over the theme), e.g. a painted stall that already shows its own snacks
+const SH = name => (Art.env && Art.env.stage && Art.env.stage[name]) || (Sprites.hooks.stage && Sprites.hooks.stage[name]);
 const { L, clamp, W } = Tapri, S = Tapri.stage = {}, dog = Tapri.dog, owner = Tapri.owner, K = Art.K || 1, Z = K / 2;
 const setup = c => { Art.setCtx(c); return Art.api; };
 S.drawRadio = function(c) {
@@ -30,7 +31,7 @@ Tapri.drawCounterProps = function(c) {
   if (SH('caseTrays')) SH('caseTrays')(c, { t, W }); else { for (const [x, w] of [[226, 128], [362, 128], [498, 100]]) { oval(a, (x + w / 2) * Z, 402 * Z, w / 2 * Z, 3 * Z, '#8e9f99'); P(x * Z, 400 * Z, w * Z, Z, '#bdc4ae'); } }
   if (SH('pakoda')) SH('pakoda')(c, { t, W, n: W.stock.pakoda }); else { for (let i = 0; i < W.stock.pakoda; i++) { const x = (236 + i % 5 * 19 + (i > 4 ? 7 : 0)) * Z, y = (395 - Math.floor(i / 5) * 10 - i % 2 * 2) * Z, r = Art.rng(91 + i); oval(a, x + 7 * Z, y, 9 * Z, 5 * Z, '#b17d3f'); for (let j = 0; j < 11; j++) P(x + r() * 15 * Z, y - 4 * Z + r() * 8 * Z, 2 * Z, Z, j % 3 ? '#c79e57' : '#8e6938'); } }
   if (SH('kachori')) SH('kachori')(c, { t, W, n: W.stock.kachori }); else { for (let i = 0; i < W.stock.kachori; i++) { const x = (377 + i % 4 * 27 + (i > 3 ? 9 : 0)) * Z, y = (392 - Math.floor(i / 4) * 12) * Z; oval(a, x, y, 11 * Z, 7 * Z, '#bd9456'); oval(a, x - 2 * Z, y - 2 * Z, 7 * Z, 4 * Z, '#cfae6b'); for (let j = 0; j < 5; j++) P(x + (j * 3 - 6) * Z, y + (j % 2) * Z, Z, Z, '#a07844'); } }
-  for (let i = 0; i < W.stock.samosa; i++) { const x = (511 + i % 4 * 22 + (i > 3 ? 8 : 0)) * Z, y = (399 - Math.floor(i / 4) * 15) * Z; Sprites.props.samosa(x, y, 0); }
+  if (SH('samosaStock')) SH('samosaStock')(c, { t, W, n: W.stock.samosa }); else { for (let i = 0; i < W.stock.samosa; i++) { const x = (511 + i % 4 * 22 + (i > 3 ? 8 : 0)) * Z, y = (399 - Math.floor(i / 4) * 15) * Z; Sprites.props.samosa(x, y, 0); } }
   // stove flames
   if (SH('flames')) SH('flames')(c, { t, W }); else { for (const x of [612, 669]) for (let i = 0; i < 7; i++) { const h = 2 + Math.round((1 + Math.sin(t * 20 + i)) * 2); E((x + i * 3) * Z, (393 - h) * Z, Z, h * Z, i % 2 ? '#719cbb' : '#3f72a1'); } }
   // kettle on the left burner

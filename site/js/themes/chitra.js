@@ -5,11 +5,11 @@
    working; only the drawing is new. See docs/CHITRA_STYLE.md. */
 (() => {
 'use strict';
-const INK = '#20140e', K = Sprites.K || Art.K || 2, SH = Art.shade;
+const INK = 'rgba(52,30,18,.78)', K = Sprites.K || Art.K || 2, SH = Art.shade;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v)), lerp = (a, b, t) => a + (b - a) * t;
 const HEAD = 13.6;          // crown to chin, scene px (adult total height ~100)
 const FACE = { headLen: 17.2, mouthY: 11, earY: 7.4 };
-let g = null, LIT = 1;      // current context (origin at the feet, scene units) and the side the light comes from
+let g = null, LIT = 1, grain = null;      // current context (origin at the feet, scene units) and the side the light comes from
 
 /* ---------- drawing primitives (scene units) ---------- */
 const tone = c => Art.tone(c);
@@ -39,13 +39,13 @@ function tube(pts, rs) {
   g.closePath(); void e; void s0;
 }
 function ell(x, y, rx, ry, rot = 0) { g.beginPath(); g.ellipse(x, y, Math.max(.05, rx), Math.max(.05, ry), rot, 0, Math.PI * 2); }
-function ink(w = .75) { g.lineWidth = w; g.strokeStyle = INK; g.lineJoin = 'round'; g.lineCap = 'round'; g.stroke(); }
+function ink(w = .75) { g.lineWidth = w * .62; g.strokeStyle = INK; g.lineJoin = 'round'; g.lineCap = 'round'; g.stroke(); }
 function fill(c) { g.fillStyle = tone(c); g.fill(); }
 // fill the current path, add a cel shadow on the side away from the light (clipped), then ink the outline
 function solid(make, col, o = {}) {
   make(); fill(col);
-  if (o.shade !== false) { g.save(); make(); g.clip(); g.fillStyle = tone(SH(col, o.dark || -.24)); const cx = o.cx || 0, w = o.w || 10, side = -LIT; g.beginPath();
-    const x0 = cx + side * w * (o.cut || .25), x1 = cx + side * w * 3; g.moveTo(x0 + side * (o.skew || 0), -200); g.lineTo(x1, -200); g.lineTo(x1, 50); g.lineTo(x0 - side * (o.skew || 0), 50); g.closePath(); g.fill(); g.restore(); }
+  if (o.shade !== false) { g.save(); make(); g.clip(); const cx = o.cx || 0, w = (o.w || 10) * 1.15, gr = g.createLinearGradient(cx + LIT * w, 0, cx - LIT * w, 0);
+    gr.addColorStop(0, 'rgba(255,236,205,.20)'); gr.addColorStop(.42, 'rgba(255,236,205,0)'); gr.addColorStop(.6, 'rgba(40,20,10,0)'); gr.addColorStop(1, 'rgba(40,20,10,' + (.34 + (o.dark ? -o.dark * .4 : 0)).toFixed(2) + ')'); g.fillStyle = gr; g.fillRect(cx - w * 3, -220, w * 6, 280); g.restore(); }
   if (o.ink !== false) { make(); ink(o.lw || .8); }
 }
 function line(pts, w = .45, c = INK) { g.beginPath(); g.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < pts.length; i++) g.lineTo(pts[i][0], pts[i][1]); g.lineWidth = w; g.strokeStyle = c === INK ? INK : tone(c); g.lineCap = 'round'; g.lineJoin = 'round'; g.stroke(); }
@@ -262,17 +262,21 @@ function sit(gctx, s, pose = {}, light) {
 
 /* ---------- people: Indian-comics palette and wardrobe ---------- */
 const SKIN = ['#d8a77c', '#c98f62', '#b77a4e', '#a5683f', '#8f5734', '#7a4a2c'];
-const CLOTH = ['#e8dcc0', '#d9472f', '#e0a530', '#2f6f8f', '#3d7a52', '#8e3b5f', '#f0ead8', '#5a6fa8', '#c75b2a', '#7a5a9a', '#2e4a6a', '#e6c87a'];
+const CLOTH = ['#ddd5c4', '#9fb3c4', '#8a3a2e', '#b8892e', '#6f7a4a', '#c45a3a', '#4d5d74', '#ebe5d8', '#7a5a48', '#a8a094', '#5c3d52', '#c7a77a', '#3e4a5c', '#b9a27c'];
 function style(s) {
   if (s.chitraDone) return; s.chitraDone = true;
   const r = Art.rng(Math.floor((s.seed || 1) * 977)), pick = a => a[Math.floor(r() * a.length)];
-  if (!s.keepLook) { s.skin = pick(SKIN); s.shirt = s.outfit === 'kurta' ? pick(['#f0ead8', '#e8dcc0', '#e6c87a', '#c9d6c4', '#d9472f', '#3d7a52']) : pick(CLOTH); if (s.outfit === 'saree') s.shirt = pick(['#d9472f', '#e0a530', '#8e3b5f', '#2f6f8f', '#3d7a52']); }
+  if (!s.keepLook) { s.skin = pick(SKIN); s.shirt = s.outfit === 'kurta' ? pick(['#efe9dc', '#e6dfcf', '#d8c9a4', '#c9d0c4', '#a8483a', '#56684e']) : pick(CLOTH); if (s.outfit === 'saree') s.shirt = pick(['#b23a2e', '#c98a2a', '#7e3456', '#2f5f7a', '#3f6a4c', '#c26a3a']); }
   if (s.age === 'old' && !s.keepLook) s.hc = pick(['#d8d4c6', '#bdb8a8', '#9a958a']);
   else if (!s.keepLook) s.hc = pick(['#17110d', '#1f1712', '#2a1d14']);
   if (s.female && s.outfit === 'kurta' && !s.dupatta) s.dupatta = pick(['#e0a530', '#d9472f', '#f0ead8', '#3d7a52']);
 }
 Art.registerTheme('chitra', {
-  label: 'Chitra', icon: 'C', outlineW: 1, outlineColor: '#20140e',
+  label: 'Chitra', icon: 'C', outlineW: 1, outlineColor: '#4a2c1c',
+  post(c, t, a) { // paper grain over the whole frame so people, props and the painted places read as one painting
+    if (!grain) { const b = document.createElement('canvas'); b.width = b.height = 96; const x = b.getContext('2d'), d = x.createImageData(96, 96); for (let i = 0; i < d.data.length; i += 4) { const v = Math.random() * 255 | 0; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 14; } x.putImageData(d, 0, 0); grain = c.createPattern(b, 'repeat'); }
+    c.save(); c.globalCompositeOperation = 'overlay'; c.fillStyle = grain; c.fillRect(0, 0, a.RW || 960, a.RH || 640); c.restore();
+  },
   grade(v) { // warm, slightly richer colours (screen-print feel); keeps night readable
     const n = parseInt(v.slice(1), 16), rgb = [n >> 16, n >> 8 & 255, n & 255], l = rgb[0] * .3 + rgb[1] * .59 + rgb[2] * .11, h2 = x => Math.max(0, Math.min(255, Math.round(x))).toString(16).padStart(2, '0');
     return '#' + h2(l + (rgb[0] - l) * 1.12 + 4) + h2(l + (rgb[1] - l) * 1.1) + h2(l + (rgb[2] - l) * 1.05 - 3);
