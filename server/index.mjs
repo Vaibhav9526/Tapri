@@ -7,7 +7,7 @@ import { WebSocketServer } from 'ws';
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'site');
 const port = process.env.PORT || 8080;
 const SEATS = 6, SEAT_ORDER = [2, 3, 0, 1, 4, 5], EMPTY_TTL = 10 * 60 * 1000;
-const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.jpeg': 'image/jpeg', '.jpg': 'image/jpeg', '.png': 'image/png', '.mp3': 'audio/mpeg', '.json': 'application/json', '.svg': 'image/svg+xml', '.woff2': 'font/woff2' };
+const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.jpeg': 'image/jpeg', '.jpg': 'image/jpeg', '.png': 'image/png', '.mp3': 'audio/mpeg', '.json': 'application/json', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.webp': 'image/webp', '.avif': 'image/avif', '.md': 'text/plain; charset=utf-8' };
 
 const server = http.createServer((q, s) => {
   const url = decodeURIComponent(q.url.split('?')[0]);
@@ -17,7 +17,7 @@ const server = http.createServer((q, s) => {
   if (url.endsWith('/')) p = path.join(p, 'index.html');
   fs.readFile(p, (e, d) => {
     if (e) { s.writeHead(404); return s.end('not found'); }
-    const ext = path.extname(p), cache = p.includes(`${path.sep}audio${path.sep}`) ? 'public, max-age=86400' : 'no-cache';
+    const ext = path.extname(p), cache = p.includes(`${path.sep}audio${path.sep}`) || p.includes(`${path.sep}img${path.sep}`) ? 'public, max-age=86400' : 'no-cache';
     s.writeHead(200, { 'Content-Type': types[ext] || 'application/octet-stream', 'Cache-Control': cache }); s.end(d);
   });
 });
