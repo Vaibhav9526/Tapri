@@ -63,14 +63,34 @@ function render() {
   Tapri.stage.drawSparrows(c); blit(c, layers.canopy); Tapri.stage.drawFoliage(c, layers, T); Tapri.drawParticles(c, sceneName); Tapri.stage.drawTub(c);
   c.save(); c.globalCompositeOperation = 'lighter'; blit(c, layers.emit);
   const lam = Art.T.lamps; if (lam > 0.05) L.lamps.forEach((l, i) => { const f = lam * l.a * (0.86 + 0.14 * Math.sin(T * 6 + i * 2) + (Math.random() < 0.015 ? -0.1 : 0)); c.globalAlpha = clamp(f, 0, 1) * 0.85; const K = Art.K || 1, sp = Art.glowSprite(l.r * K, Art.T.lampCol); c.drawImage(sp, (l.x - l.r) * K, (l.y - l.r) * K); });
-  c.restore(); c.globalAlpha = 1; Tapri.drawRain(c); if (vignette && Tapri.quality < 2) c.drawImage(vignette, 0, 0);
+  c.restore(); c.globalAlpha = 1; Tapri.drawRain(c); if (vignette && Tapri.quality < 2 && !bd.has) c.drawImage(vignette, 0, 0);
   if (Art.theme && Art.theme.post && !(Tapri.quality >= 1)) { try { Art.theme.post(c, T, Art.api); } catch (e) { if (!window.__pe) { window.__pe = 1; console.log('THEME_POST_ERR ' + e.message); } } }
 }
 /* ====================== camera (cover the screen, pan on tall phones) ====================== */
 const stage = $('stage'), viewport = $('viewport'); let vw = 0, vh = 0, S = 1, camX = 0, camY = 0, camTarget = 240, manualUntil = 0, drag = null;
 let availW = 0, availH = 0, zoomClose = false, focusOn = false, focusW = 250, focusY = 245;
-function layout() { vw = window.innerWidth; vh = window.innerHeight; const open = panel.classList.contains('open'), mob = vw <= 760; availW = open && !mob ? vw - 372 : vw; availH = open && mob ? Math.max(vh * 0.4, vh - panel.offsetHeight - 84) : vh; const portrait = vw < 760 || vh > vw * 1.15; S = focusOn ? Math.min(availW / focusW, availH * 1.3 / LH) : !portrait ? Math.max(availW / LW, availH / LH) : portrait && zoomClose ? Math.min(Math.max(availW / 200, availH * 0.6 / LH), availH / LH) : Math.min(availW / LW, availH / LH); stage.style.width = LW * S + 'px'; stage.style.height = LH * S + 'px'; document.documentElement.style.setProperty('--u', S + 'px'); camY = focusOn ? clamp(availH * 0.6 - focusY * S, Math.min(0, availH - LH * S), 0) : !portrait ? clamp(availH - 318 * S, Math.min(0, availH - LH * S), 0) : Math.max(0, (availH - LH * S) / 2); if (open && mob) camY = Math.max(camY, 58); applyCam(true); }
-function applyCam(snap) { const minX = Math.min(0, availW - LW * S); const want = LW * S <= availW + 2 && !focusOn ? (availW - LW * S) / 2 : clamp(availW / 2 - camTarget * S, minX, 0); camX = snap ? want : lerp(camX, want, 0.045); stage.style.transform = `translate3d(${camX.toFixed(1)}px,${camY.toFixed(1)}px,0)`; }
+/* ====================== painted backdrop (env.backdrop) ====================== */
+/* env.backdrop = { day:{desktop:{src,rect:[x,y,w,h]}, mobile:{...}}, dusk, night, morning }. rect = where the 480x320 scene sits inside the image (image px). */
+const bd = { has: false, el: null, imgs: [], src: '' };
+function bdPortrait() { return window.innerWidth < 760 || window.innerHeight > window.innerWidth * 1.15; }
+function pickBackdrop() { const env = Art.ENVS && Art.ENVS[world.env], B = env && env.backdrop; if (!B) return null; const t = B[sceneName] || B.day || B.morning || B.dusk || B.night; if (!t) return null; const e = bdPortrait() ? (t.mobile || t.desktop) : (t.desktop || t.mobile); return e && e.src && e.rect ? e : null; }
+function updateBackdrop() {
+  const e = pickBackdrop(); bd.has = !!e; document.body.classList.toggle('hasbd', bd.has);
+  if (!bd.el) { bd.el = document.createElement('div'); bd.el.id = 'backdrop'; bd.el.setAttribute('aria-hidden', 'true'); viewport.insertBefore(bd.el, viewport.firstChild); }
+  bd.el.style.display = bd.has ? '' : 'none';
+  if (!e) { if (bd.src) { bd.src = ''; bd.imgs.forEach(i => i.remove()); bd.imgs = []; } return; }
+  const key = e.src + '|' + e.rect.join(','); if (key === bd.src) return; bd.src = key;
+  const im = new Image(); im.className = 'bdimg'; im._rect = e.rect; im.decoding = 'async'; im.style.opacity = '0';
+  im.onload = () => { if (bd.src !== key) return; im.style.width = im.naturalWidth + 'px'; im.style.height = im.naturalHeight + 'px'; bd.el.appendChild(im); const old = bd.imgs; bd.imgs = [im].concat(old); alignBackdrop(); requestAnimationFrame(() => requestAnimationFrame(() => { im.style.opacity = '1'; })); setTimeout(() => { old.forEach(o => o.remove()); bd.imgs = bd.imgs.filter(o => !old.includes(o)); }, 1100); };
+  im.onerror = () => { if (bd.src === key) console.log('BACKDROP_LOAD_ERR ' + e.src); };
+  im.src = e.src;
+}
+function alignBackdrop() {
+  if (!bd.has) return; for (const im of bd.imgs) { if (!im.naturalWidth) continue; const [rx, ry, rw] = im._rect, k = (LW * S) / rw, tx = camX - rx * k, ty = camY - ry * k, l = im._l;
+    if (l && Math.abs(l[0] - tx) < 0.1 && Math.abs(l[1] - ty) < 0.1 && Math.abs(l[2] - k) < 0.00005) continue; im._l = [tx, ty, k]; im.style.transform = 'translate3d(' + tx.toFixed(2) + 'px,' + ty.toFixed(2) + 'px,0) scale(' + k.toFixed(5) + ')'; }
+}
+function layout() { vw = window.innerWidth; vh = window.innerHeight; const open = panel.classList.contains('open'), mob = vw <= 760; availW = open && !mob ? vw - 372 : vw; availH = open && mob ? Math.max(vh * 0.4, vh - panel.offsetHeight - 84) : vh; const portrait = vw < 760 || vh > vw * 1.15; updateBackdrop(); S = focusOn ? Math.min(availW / focusW, availH * 1.3 / LH) : !portrait ? (bd.has ? Math.min : Math.max)(availW / LW, availH / LH) : portrait && zoomClose ? Math.min(Math.max(availW / 200, availH * 0.6 / LH), availH / LH) : Math.min(availW / LW, availH / LH); stage.style.width = LW * S + 'px'; stage.style.height = LH * S + 'px'; document.documentElement.style.setProperty('--u', S + 'px'); camY = focusOn ? clamp(availH * 0.6 - focusY * S, Math.min(0, availH - LH * S), 0) : !portrait && !bd.has ? clamp(availH - 318 * S, Math.min(0, availH - LH * S), 0) : Math.max(0, (availH - LH * S) / 2); if (open && mob) camY = Math.max(camY, 58); applyCam(true); }
+function applyCam(snap) { const minX = Math.min(0, availW - LW * S); const want = LW * S <= availW + 2 && !focusOn ? (availW - LW * S) / 2 : clamp(availW / 2 - camTarget * S, minX, 0); camX = snap ? want : lerp(camX, want, 0.045); stage.style.transform = `translate3d(${camX.toFixed(1)}px,${camY.toFixed(1)}px,0)`; alignBackdrop(); }
 function camFollow() { const T = Tapri.T; if ((LW * S <= availW + 4 && !focusOn) || T < manualUntil) return; let t = owner.x; for (const [e, b] of bubs) { if (b.kind !== 'note' && e !== owner && e.x !== undefined) { t = e.x; break; } } if (helper.carrying) t = helper.x; camTarget = lerp(camTarget, clamp(t, 150, 330), 0.04); }
 window.addEventListener('resize', () => { layout(); if (Art.T) ambient(); });
 function toggleZoom() { zoomClose = !zoomClose; $('btnZoom').classList.toggle('on', zoomClose); camTarget = clamp(owner.x, 120, 360); manualUntil = 0; layout(); }
@@ -123,8 +143,8 @@ function placeBubbles() {
 
 /* ====================== scene ====================== */
 /* ====================== worlds: theme (look) x environment (place) ====================== */
-const world = { env: 'village', theme: 'retro' };
-function applyWorldHooks() { const th = Art.THEMES[world.theme] || Art.THEMES.retro, env = Art.ENVS[world.env] || Art.ENVS.city; for (const k of Object.keys(Sprites.hooks)) delete Sprites.hooks[k]; Object.assign(Sprites.hooks, th.actors || {}); Sprites.envPeople = env.people || null; TA.setEnvMix(env.mix); }
+const world = { env: 'mohalla', theme: 'chitra' };
+function applyWorldHooks() { const th = Art.THEMES[world.theme] || Art.THEMES.retro, env = Art.ENVS[world.env] || Art.ENVS.city; for (const k of Object.keys(Sprites.hooks)) delete Sprites.hooks[k]; Object.assign(Sprites.hooks, th.actors || {}); Sprites.envPeople = env.people || null; TA.setEnvMix(env.mix);  if (window.TapriAvatar) setTimeout(() => TapriAvatar.drawAll(), 0); }
 function setWorld(o) { Object.assign(world, o); if (!Art.ENVS[world.env]) world.env = 'city'; if (!Art.THEMES[world.theme]) world.theme = 'retro'; store.set({ world: { env: world.env, theme: world.theme } }); buildScene(sceneName); bubs.forEach(b => b.el.remove()); bubs.clear(); Tapri.parts.leaves.length = 0; Tapri.parts.moths.length = 0; sparrows.length = 0; Tapri.resetCrowd(); owner.start(); dog.reset(); renderWorldUI(); changed('world'); }
 const WORLD_ICON = { city: 'building', coast: 'waves', desert: 'tent', hill: 'mountain', railway: 'train', rural: 'sprout', urban: 'building2', village: 'home', retro: 'radio', comic: 'comic' };
 function renderWorldUI() {
@@ -137,8 +157,8 @@ $('btnWorld').onclick = () => { TA.resume(); toggleWorld(); }; $('closeWorld').o
 function loadScript(src) { return new Promise(res => { const s = document.createElement('script'); s.src = src + '?v=' + Date.now(); s.onload = () => res(true); s.onerror = () => { console.log('WORLD_FILE_FAIL ' + src); res(false); }; document.head.appendChild(s); }); }
 async function loadWorldFiles() { for (const f of (window.TAPRI_WORLD_FILES || [])) await loadScript('js/' + f); }
 function timeScene() { const h = new Date().getHours() + new Date().getMinutes() / 60; return h < 5.5 ? 'night' : h < 10.5 ? 'morning' : h < 17 ? 'day' : h < 19.5 ? 'dusk' : 'night'; }
-function ambient() { const portrait = window.innerWidth < 760 || window.innerHeight > window.innerWidth * 1.15, sk = Art.T.sky; const bg = portrait ? `linear-gradient(${sk[0]} 0%, ${sk[2]} 36%, #3a3228 58%, #17130f 100%)` : sk[0]; document.body.style.background = bg; viewport.style.background = bg; const b = document.getElementById('bd'); if (b) b.style.opacity = portrait ? 0 : 1; }
-function buildScene(name) { sceneName = name; Tapri.sceneName = name; applyWorldHooks(); const K0 = Art.K || 1; if (cv.width !== LW * K0) { cv.width = LW * K0; cv.height = LH * K0; main.imageSmoothingEnabled = false; } layers = Art.build(name, world.env, world.theme); glass = Art.glassLayer(); computeBoxes(); paintBackdrop(); document.body.dataset.theme = Art.themeId; document.body.dataset.env = Art.envId;
+function ambient() { const portrait = window.innerWidth < 760 || window.innerHeight > window.innerWidth * 1.15, sk = Art.T.sky; let bg = portrait ? `linear-gradient(${sk[0]} 0%, ${sk[2]} 36%, #3a3228 58%, #17130f 100%)` : sk[0]; if (bd.has) bg = '#0b0a12'; document.body.style.background = bg; viewport.style.background = bg; const b = document.getElementById('bd'); if (b) b.style.opacity = portrait ? 0 : 1; }
+function buildScene(name) { sceneName = name; Tapri.sceneName = name; applyWorldHooks(); const K0 = Art.K || 1; if (cv.width !== LW * K0) { cv.width = LW * K0; cv.height = LH * K0; main.imageSmoothingEnabled = false; } layers = Art.build(name, world.env, world.theme); glass = Art.glassLayer(); computeBoxes(); paintBackdrop(); { const had = bd.has; updateBackdrop(); if (bd.has !== had) layout(); } document.body.dataset.theme = Art.themeId; document.body.dataset.env = Art.envId;
   const RW = LW * K0, RH = LH * K0, v = Art.mk(RW, RH); const g = v.x.createRadialGradient(RW / 2, RH / 2, RH * 0.45, RW / 2, RH / 2, RW * 0.62); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, name === 'night' ? 'rgba(0,0,8,.45)' : name === 'dusk' ? 'rgba(10,0,20,.32)' : 'rgba(20,10,0,.18)'); v.x.fillStyle = g; v.x.fillRect(0, 0, RW, RH); vignette = v.c;
   ambient(); document.querySelector('meta[name=theme-color]').setAttribute('content', Art.T.sky[0]); }
 function setScene(name) {

@@ -310,3 +310,8 @@ input[type=range]{accent-color:var(--accent)}
 .ptag.me{border-color:#ffc56e}.ptag.me::before{background:#ffc56e}
 .ptag.talk{border-color:#6fdc7a;box-shadow:0 0 0 2px rgba(111,220,122,.45),0 0 14px rgba(111,220,122,.5)}.ptag.talk::before{background:#6fdc7a}
 .ptag.nomic::after{content:"";width:12px;height:12px;flex:none;opacity:.85;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='m2 2 20 20'/%3E%3Cpath d='M5 10v2a7 7 0 0 0 12 5'/%3E%3Cpath d='M15 9.34V5a3 3 0 0 0-5.68-1.33'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='m2 2 20 20'/%3E%3Cpath d='M5 10v2a7 7 0 0 0 12 5'/%3E%3Cpath d='M15 9.34V5a3 3 0 0 0-5.68-1.33'/%3E%3C/svg%3E") center/contain no-repeat}
+
+/* painted env backdrop: sits behind the transparent canvas, aligned in JS (alignBackdrop) */
+#backdrop{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+#backdrop .bdimg{position:absolute;left:0;top:0;max-width:none;transform-origin:0 0;will-change:transform;transition:opacity .9s ease;image-rendering:auto}
+body.hasbd #bd{display:none}
