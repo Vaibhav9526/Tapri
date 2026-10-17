@@ -36,6 +36,14 @@
   const sound = { upi: 'पेटीएम पर दस रुपये प्राप्त हुए' }; // payment speaker (spoken by the soundbox)
   const calls = [['हाँ भाई, बोल'], ['अच्छा, ठीक है'], ['मैं टपरी पर हूँ, आधे घंटे में पहुँचता हूँ'], ['चल, रखता हूँ']];
   const thanks = ['शुक्रिया भैया', 'धन्यवाद', 'वाह, गरम है']; const serve = ['लीजिए, गरम चाय', 'ये लीजिए']; const owner = ['समोसे अभी निकले हैं, गरमा-गरम!'];
+  // street life (street.js). Voice keys: k = begging child / kid (Munni), k2 = second kid (Amit), v1..v5 = vendors (Vikas, Keshav, Samar, Abhishek, Vihan).
+  // These clips were made with the ElevenLabs MCP (eleven_v4) and fetched by tools/fetch_street_voices.mjs.
+  const street = {
+    vendors: { sabzi: 'सब्ज़ी ले लो! टमाटर, आलू, प्याज़… ताज़ा सब्ज़ी!', chana: 'गरम चने! चना जोर गरम!', gubbare: 'गुब्बारे ले लो! रंग-बिरंगे गुब्बारे!', kulfi: 'कुल्फ़ी! मलाई कुल्फ़ी! ठंडी-ठंडी कुल्फ़ी!', raddi: 'रद्दी वाला! पुराना अख़बार, रद्दी बेच लो!' },
+    vendorVoice: { sabzi: 'v1', chana: 'v2', gubbare: 'v3', kulfi: 'v4', raddi: 'v5' },
+    beg: { askF: 'दीदी, कुछ दे दो ना… सुबह से कुछ नहीं खाया', askM: 'भैया, दस रुपये दे दो, भगवान भला करेगा', thanks: 'थैंक यू! भगवान आपका भला करे!', giveM: 'ये लो बेटा, कुछ खा लेना', noM: 'माफ़ करना बेटा, छुट्टे नहीं हैं', giveF: 'ये ले, और जाकर कुछ खा ले', noF: 'अभी नहीं बेटा, जाओ' },
+    kids: ['भाग, जल्दी भाग! रन ले!', 'आउट! आउट है!', 'नहीं, नॉट आउट! बॉल नीचे थी!']
+  };
   const shoo = ['हट! हट!', 'अरे हट यहाँ से!', 'ए, भाग यहाँ से!'], pee = ['अरे यार, ये कुत्ता…', 'छी! यहीं कर दिया!'];
   (window.TAPRI_STORIES || []).forEach(st => chats.push({ g: st.g, id: st.id, title: st.title, long: true, lines: st.lines }));
   const V = { mm: ['m', 'm2'], ff: ['f', 'f2'], mf: ['m', 'f'] };
@@ -45,6 +53,7 @@
     for (const k in buys) buys[k].forEach(([s, t]) => { add(s ? 'o' : 'm', t); if (!s) add('f', t); });
     for (const k in pay) pay[k].forEach(([s, t]) => { add(s ? 'o' : 'm', t); });
     add('o', sound.upi); calls.forEach(([t]) => { add('m', t); add('f', t); }); thanks.forEach(t => { add('m', t); add('f', t); }); serve.forEach(t => add('h', t)); shoo.concat(pee).forEach(t => { add('m', t); add('f', t); }); owner.forEach(t => add('o', t));
+    for (const k in street.vendors) add(street.vendorVoice[k], street.vendors[k]); const b = street.beg; add('k', b.askF); add('k', b.askM); add('k', b.thanks); add('m', b.giveM); add('m', b.noM); add('f', b.giveF); add('f', b.noF); add('k2', street.kids[0]); add('k2', street.kids[1]); add('k', street.kids[2]);
     const seen = new Set(); return o.filter(x => { const k = x.v + '|' + x.text; if (seen.has(k)) return false; seen.add(k); return true; }); }
-  window.TAPRI_DIALOGUES = { shoo, pee, chats, orders, buys, pay, sound, calls, thanks, serve, owner, voiceFor: (g, s) => V[g][s], ALL_LINES: all };
+  window.TAPRI_DIALOGUES = { street, shoo, pee, chats, orders, buys, pay, sound, calls, thanks, serve, owner, voiceFor: (g, s) => V[g][s], ALL_LINES: all };
 })();

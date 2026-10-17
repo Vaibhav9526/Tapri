@@ -48,18 +48,18 @@ const radio = { hover: false, wiggle: 0, nextNote: 0, x: L.radio.x, y: L.radio.y
 /* ====================== frame ====================== */
 function step(dt) {
   Tapri.T = T; Tapri.dt = dt; Tapri.runTimers(); Tapri.beat = TA.beat(T); Tapri.rainLevel = TA.state.rain;
-  if (started) { owner.update(dt); Tapri.updateCrowd(dt); dog.update(dt); sparrowsUpdate(dt); Tapri.updateFX(dt, sceneName, TA.state.rain); }
+  if (started) { owner.update(dt); Tapri.updateCrowd(dt); Tapri.street.update(dt); dog.update(dt); sparrowsUpdate(dt); Tapri.updateFX(dt, sceneName, TA.state.rain); }
 }
 function render() {
   const c = main; c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1; c.clearRect(0, 0, cv.width, cv.height);
   c.drawImage(layers.sky, 0, 0); Art.runDynamic('sky', c, T, Tapri.dt); c.drawImage(layers.far, 0, 0); Art.runDynamic('far', c, T, Tapri.dt); c.drawImage(layers.back, 0, 0); Tapri.stage.drawClock(c); Tapri.stage.drawRadio(c); blit(c, layers.furnBack); dog.drawPuddles(c);
   try { drawActor(owner.draw, owner.x, owner.groundY, { shadow: false, reflect: false }); } catch (e) { if (!window.__oe) { window.__oe = 1; console.log('OWNER_DRAW_ERR ' + e.stack); } }
   blit(c, layers.front); Tapri.drawCounterProps(c); blit(c, glass);
-  const act = people.slice(); act.push(helper);
+  const act = people.concat(Tapri.street.actors); act.push(helper);
   const A = act.filter(p => (p.gy || 0) <= GROUND + 0.5).sort((a, b) => a.gy - b.gy), B = act.filter(p => p.gy > GROUND + 0.5).sort((a, b) => a.gy - b.gy);
   drawActor(dog.draw, dog.x, dog.y, { sw: 14, outline: true });
   const drawP = p => { if (p === helper) drawActor(helper.draw, helper.x, helper.gy, { sw: 10 }); else if (p.state === 'seated') drawActor(p.draw.bind(p), p.x, GROUND, { sw: 13 }); else drawActor(p.draw.bind(p), p.x, p.gy, { sw: 10 }); };
-  A.forEach(drawP); blit(c, layers.tables); Tapri.stage.drawTableItems(c); B.forEach(drawP); Art.runDynamic('front', c, T, Tapri.dt);
+  A.forEach(drawP); blit(c, layers.tables); Tapri.stage.drawTableItems(c); B.forEach(drawP); Tapri.street.drawExtras(c); Art.runDynamic('front', c, T, Tapri.dt);
   Tapri.stage.drawSparrows(c); blit(c, layers.canopy); Tapri.stage.drawFoliage(c, layers, T); Tapri.drawParticles(c, sceneName); Tapri.stage.drawTub(c);
   c.save(); c.globalCompositeOperation = 'lighter'; blit(c, layers.emit);
   const lam = Art.T.lamps; if (lam > 0.05) L.lamps.forEach((l, i) => { const f = lam * l.a * (0.86 + 0.14 * Math.sin(T * 6 + i * 2) + (Math.random() < 0.015 ? -0.1 : 0)); c.globalAlpha = clamp(f, 0, 1) * 0.85; const K = Art.K || 1, sp = Art.glowSprite(l.r * K, Art.T.lampCol); c.drawImage(sp, (l.x - l.r) * K, (l.y - l.r) * K); });
@@ -69,7 +69,7 @@ function render() {
 /* ====================== camera (cover the screen, pan on tall phones) ====================== */
 const stage = $('stage'), viewport = $('viewport'); let vw = 0, vh = 0, S = 1, camX = 0, camY = 0, camTarget = 240, manualUntil = 0, drag = null;
 let availW = 0, availH = 0, zoomClose = false, focusOn = false, focusW = 250, focusY = 245;
-function layout() { vw = window.innerWidth; vh = window.innerHeight; const open = panel.classList.contains('open'), mob = vw <= 760; availW = open && !mob ? vw - 372 : vw; availH = open && mob ? Math.max(vh * 0.4, vh - panel.offsetHeight - 84) : vh; const portrait = vw < 760 || vh > vw * 1.15; S = focusOn ? Math.min(availW / focusW, availH * 1.3 / LH) : portrait && zoomClose ? Math.min(Math.max(availW / 200, availH * 0.6 / LH), availH / LH) : Math.min(availW / LW, availH / LH); stage.style.width = LW * S + 'px'; stage.style.height = LH * S + 'px'; document.documentElement.style.setProperty('--u', S + 'px'); camY = focusOn ? clamp(availH * 0.6 - focusY * S, Math.min(0, availH - LH * S), 0) : Math.max(0, (availH - LH * S) / 2); if (open && mob) camY = Math.max(camY, 58); applyCam(true); }
+function layout() { vw = window.innerWidth; vh = window.innerHeight; const open = panel.classList.contains('open'), mob = vw <= 760; availW = open && !mob ? vw - 372 : vw; availH = open && mob ? Math.max(vh * 0.4, vh - panel.offsetHeight - 84) : vh; const portrait = vw < 760 || vh > vw * 1.15; S = focusOn ? Math.min(availW / focusW, availH * 1.3 / LH) : !portrait ? Math.max(availW / LW, availH / LH) : portrait && zoomClose ? Math.min(Math.max(availW / 200, availH * 0.6 / LH), availH / LH) : Math.min(availW / LW, availH / LH); stage.style.width = LW * S + 'px'; stage.style.height = LH * S + 'px'; document.documentElement.style.setProperty('--u', S + 'px'); camY = focusOn ? clamp(availH * 0.6 - focusY * S, Math.min(0, availH - LH * S), 0) : !portrait ? clamp(availH - 318 * S, Math.min(0, availH - LH * S), 0) : Math.max(0, (availH - LH * S) / 2); if (open && mob) camY = Math.max(camY, 58); applyCam(true); }
 function applyCam(snap) { const minX = Math.min(0, availW - LW * S); const want = LW * S <= availW + 2 && !focusOn ? (availW - LW * S) / 2 : clamp(availW / 2 - camTarget * S, minX, 0); camX = snap ? want : lerp(camX, want, 0.045); stage.style.transform = `translate3d(${camX.toFixed(1)}px,${camY.toFixed(1)}px,0)`; }
 function camFollow() { const T = Tapri.T; if ((LW * S <= availW + 4 && !focusOn) || T < manualUntil) return; let t = owner.x; for (const [e, b] of bubs) { if (b.kind !== 'note' && e !== owner && e.x !== undefined) { t = e.x; break; } } if (helper.carrying) t = helper.x; camTarget = lerp(camTarget, clamp(t, 150, 330), 0.04); }
 window.addEventListener('resize', () => { layout(); if (Art.T) ambient(); });

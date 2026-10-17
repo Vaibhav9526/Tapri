@@ -11,7 +11,8 @@ let ws = null, pending = null, joined = false, ready = false, closing = false, m
 const players = new Map();          // id -> { id, name, style, seat, person, tag, mine }
 const pcs = new Map();              // id -> { pc, polite, making, ignore }
 let retry = 0, timers = {}, myName = store.get('name');
-Tapri.focus = store.get('focus') !== '0';
+let focusPref = store.get('focus') !== '0';   // the bench focus only applies inside a room; solo play always has the full crowd
+Tapri.focus = false;
 
 // the rig caches sprites on the style object (keys starting with _); never send or keep those across the wire
 const clean = s => JSON.parse(JSON.stringify(s, (k, v) => (k[0] === '_' ? undefined : v)));
@@ -122,11 +123,12 @@ Tapri.hooks.frame = () => {
 /* ---------- focus bench: only the people in the room, zoomed in ---------- */
 function updateFocus() {
   if (!Tapri.view) return;
-  if (!Tapri.focus || !joined || !players.size) { Tapri.view.focus(null); return; }
+  Tapri.focus = focusPref && joined;
+  if (!Tapri.focus || !players.size) { Tapri.view.focus(null); return; }
   const xs = [...players.values()].map(p => L.seats[p.seat].x), lo = Math.min(...xs), hi = Math.max(...xs);
   Tapri.view.focus((lo + hi) / 2, Math.max(270, hi - lo + 170));
 }
-function setFocus(on) { Tapri.focus = on; store.set('focus', on ? '1' : '0'); if (!on && joined) Tapri.resetCrowd(); updateFocus(); paintBar(); toast(on ? 'Focus bench: only your group is shown' : 'Back to the busy tapri'); }
+function setFocus(on) { focusPref = on; Tapri.focus = on && joined; store.set('focus', on ? '1' : '0'); if (!on && joined) Tapri.resetCrowd(); updateFocus(); paintBar(); toast(on ? 'Focus bench: only your group is shown' : 'Back to the busy tapri'); }
 
 /* ---------- shared radio + world ---------- */
 Tapri.hooks.changed = what => {
@@ -175,11 +177,11 @@ function paintBar() {
   mic.classList.toggle('on', on); mic.classList.toggle('muted', V.started && !on);
   mic.innerHTML = !V.started ? ico('mic') + '<span>Join voice</span>' : on ? ico('mic') : ico('mic-off'); mic.title = !V.started ? 'Join voice chat' : on ? 'Mute your mic' + (V.ptt ? ' (push to talk: ' + V.ptt + ')' : '') : 'Unmute your mic';
   const d = $('rbDeaf'); d.classList.toggle('muted', V.deafened); d.innerHTML = ico(V.deafened ? 'headphones-off' : 'headphones'); d.title = V.deafened ? 'Undeafen' : 'Deafen (stop hearing everyone)'; d.hidden = !V.started;
-  $('rbFocus').classList.toggle('on', Tapri.focus);
+  $('rbFocus').classList.toggle('on', focusPref);
 }
 $('rbMic').onclick = async () => { TA.resume(); if (!V.started) { await startVoice(); return; } V.setMic(!V.mic); };
 $('rbDeaf').onclick = () => V.setDeaf(!V.deafened);
-$('rbFocus').onclick = () => setFocus(!Tapri.focus);
+$('rbFocus').onclick = () => setFocus(!focusPref);
 $('rbLook').onclick = () => AV.openEditor();
 $('rbSet').onclick = () => { TA.resume(); V.openSettings(); };
 $('rbCode').onclick = async () => {
