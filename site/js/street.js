@@ -16,31 +16,92 @@ function disc(g, x, y, r, c) { const k = K(); g.fillStyle = c; g.beginPath(); g.
 function line(g, x0, y0, x1, y1, w, c) { const k = K(); g.strokeStyle = c; g.lineWidth = w * k; g.lineCap = 'round'; g.beginPath(); g.moveTo(OX() + x0 * k, OY() + y0 * k); g.lineTo(OX() + x1 * k, OY() + y1 * k); g.stroke(); }
 function wheel(g, x, y, r, t) { disc(g, x, y, r, '#2b2622'); disc(g, x, y, r - 1.5, '#6b5a44'); const a = t; line(g, x - Math.cos(a) * (r - 1), y - Math.sin(a) * (r - 1), x + Math.cos(a) * (r - 1), y + Math.sin(a) * (r - 1), 1, '#2b2622'); }
 
-/* ---------- props ---------- */
+/* ---------- props: smooth vector, ink outline + flat colour + one shade (same look as envs/mohalla.js and themes/chitra-props.js) ---------- */
+const INK = '#20140e';
+function V(g, fn, d = 1) { const k = K(); g.save(); g.translate(OX(), OY()); g.scale(k * d, k); g.lineJoin = 'round'; g.lineCap = 'round'; g.imageSmoothingEnabled = true; try { fn(g); } finally { g.restore(); } }
+const tn = c => Art.tone(c), sh = (c, v) => Art.shade(c, v);
+function poly(g, pts, fill, lw = .8) { g.beginPath(); g.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < pts.length; i++) g.lineTo(pts[i][0], pts[i][1]); g.closePath(); if (fill) { g.fillStyle = tn(fill); g.fill(); } if (lw) { g.lineWidth = lw; g.strokeStyle = INK; g.stroke(); } }
+function blob(g, pts, fill, lw = .8) { const n = pts.length, m = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], s = m(pts[n - 1], pts[0]); g.beginPath(); g.moveTo(s[0], s[1]); for (let i = 0; i < n; i++) { const e = m(pts[i], pts[(i + 1) % n]); g.quadraticCurveTo(pts[i][0], pts[i][1], e[0], e[1]); } g.closePath(); if (fill) { g.fillStyle = tn(fill); g.fill(); } if (lw) { g.lineWidth = lw; g.strokeStyle = INK; g.stroke(); } }
+function ell(g, x, y, rx, ry, fill, lw = .8, rot = 0) { g.beginPath(); g.ellipse(x, y, Math.max(.05, rx), Math.max(.05, ry), rot, 0, 6.2832); if (fill) { g.fillStyle = tn(fill); g.fill(); } if (lw) { g.lineWidth = lw; g.strokeStyle = INK; g.stroke(); } }
+function ln(g, x0, y0, x1, y1, w, c) { g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.lineWidth = w; g.strokeStyle = c === INK ? INK : c[0] === '#' ? tn(c) : c; g.stroke(); }
+function rod(g, x0, y0, x1, y1, w, c) { ln(g, x0, y0, x1, y1, w + 1.2, INK); ln(g, x0, y0, x1, y1, w, c); }
+function rrect(g, x, y, w, h, fill, r = 1.5, lw = .8) { g.beginPath(); g.roundRect(x, y, w, h, r); if (fill) { g.fillStyle = tn(fill); g.fill(); } if (lw) { g.lineWidth = lw; g.strokeStyle = INK; g.stroke(); } }
+function wheel2(g, x, y, r, a) { ell(g, x, y, r, r, '#3a2f26', .9); ell(g, x, y, r - 1.6, r - 1.6, '#a88a5a', .5); for (let i = 0; i < 4; i++) { const t = a + i * Math.PI / 4; ln(g, x - Math.cos(t) * (r - 1.6), y - Math.sin(t) * (r - 1.6), x + Math.cos(t) * (r - 1.6), y + Math.sin(t) * (r - 1.6), .7, '#3a2f26'); } ell(g, x, y, 1.1, 1.1, '#d9b23a', .5); }
+
 const PROPS = {
   sabzi(g, d, t) { // hand cart (thela) with heaps of vegetables, pushed ahead
-    const x0 = d > 0 ? 10 : -60; rect(g, x0, -30, 50, 4, '#8a5a32'); rect(g, x0, -26, 50, 2, '#5e3c20'); line(g, d > 0 ? x0 : x0 + 50, -29, d > 0 ? x0 - 12 : x0 + 62, -40, 2, '#5e3c20');
-    for (let i = 0; i < 5; i++) { const c = ['#c8352a', '#3f8a3a', '#d9a33a', '#7a4fa0', '#e0702a'][i]; for (let j = 0; j < 4; j++) disc(g, x0 + 5 + i * 10 + (j % 2) * 3, -33 - (j > 1 ? 3 : 0), 2.6, c); }
-    wheel(g, x0 + 10, -18, 7, t * 3 * d); wheel(g, x0 + 40, -18, 7, t * 3 * d);
+    V(g, g => {
+      const x0 = d > 0 ? 10 : -60;
+      rod(g, d > 0 ? x0 : x0 + 50, -29, d > 0 ? x0 - 12 : x0 + 62, -40, 2, '#6b4a2a');
+      rrect(g, x0, -30, 50, 5, '#9a6a3a', 1, .9); rrect(g, x0 + 1, -25.4, 48, 2.6, '#6b4a2a', .8, .7);
+      for (let i = 0; i < 6; i++) ln(g, x0 + 4 + i * 8.4, -29.4, x0 + 4 + i * 8.4, -25.8, .6, 'rgba(32,20,14,.5)');
+      rod(g, x0 + 10, -23, x0 + 10, -15, 1.6, '#6b4a2a'); rod(g, x0 + 40, -23, x0 + 40, -15, 1.6, '#6b4a2a');
+      const cols = ['#d4372c', '#4d9a3e', '#d9a33a', '#7a4fa0', '#e8782a'];
+      for (let i = 0; i < 5; i++) { const c = cols[i], cx = x0 + 6 + i * 9.4; for (const [dx, dy] of [[-2.6, 0], [2.6, 0], [0, -3.2]]) { ell(g, cx + dx, -33.4 + dy, 3, 2.7, c, .7); ell(g, cx + dx - .8, -34.4 + dy, .9, .7, sh(c, .45), 0); } }
+      wheel2(g, x0 + 10, -15, 8, t * 3 * d); wheel2(g, x0 + 40, -15, 8, t * 3 * d);
+    });
   },
   kulfi(g, d, t) { // red kulfi box on wheels with a bell
-    const x0 = d > 0 ? 10 : -42; rect(g, x0, -44, 32, 24, '#b8322a'); rect(g, x0, -44, 32, 3, '#e8d2a0'); rect(g, x0 + 4, -38, 24, 10, '#f2ead6'); rect(g, x0 + 6, -36, 20, 6, '#3f6fa8');
-    line(g, d > 0 ? x0 : x0 + 32, -40, d > 0 ? x0 - 10 : x0 + 42, -46, 2, '#4a4a4a'); disc(g, x0 + 16, -48, 2.5, '#d9b23a'); wheel(g, x0 + 7, -14, 6, t * 3 * d); wheel(g, x0 + 25, -14, 6, t * 3 * d);
+    V(g, g => {
+      const x0 = d > 0 ? 10 : -42;
+      rod(g, d > 0 ? x0 : x0 + 32, -40, d > 0 ? x0 - 10 : x0 + 42, -46, 2, '#4a4a4a');
+      rrect(g, x0, -44, 32, 24, '#c0392c', 2, .9); rrect(g, x0 + 24, -44, 8, 24, '#8e241c', 2, 0); rrect(g, x0, -44, 32, 24, null, 2, .9);
+      rrect(g, x0, -44, 32, 4, '#efe0bd', 1.5, .8); rrect(g, x0 + 4, -38, 24, 12, '#f6efd8', 1.5, .8);
+      g.font = '800 7px "Noto Sans Devanagari","Nirmala UI","Mangal",sans-serif'; g.textAlign = 'center'; g.fillStyle = tn('#2f5d8a'); g.fillText('कुल्फी', x0 + 16, -29.4);
+      ell(g, x0 + 16, -47.6, 2.6, 2.6, '#d9b23a', .8); ln(g, x0 + 16, -45, x0 + 16, -44, .8, INK);
+      wheel2(g, x0 + 7, -11, 7, t * 3 * d); wheel2(g, x0 + 25, -11, 7, t * 3 * d);
+    });
   },
-  chana(g, d) { // flat basket on the head, cones of paper on the rim
-    rect(g, -15, -112, 30, 5, '#a8793a'); rect(g, -13, -116, 26, 4, '#c79a4a'); for (let i = 0; i < 6; i++) disc(g, -10 + i * 4, -117, 1.6, '#d8b46a'); rect(g, -16, -108, 32, 2, '#6b4a22');
+  chana(g, d) { // flat basket on the head, paper cones of chana on the rim
+    V(g, g => {
+      ell(g, 0, -108, 9, 2.6, '#efe0bd', .8); // cloth ring pad
+      blob(g, [[-17, -112], [0, -114], [17, -112], [14, -106], [-14, -106]], '#b98a46', .9); poly(g, [[8, -113.6], [17, -112], [14, -106], [6, -106]], '#8c6428', 0);
+      for (let i = 0; i < 6; i++) ln(g, -13 + i * 5.4, -112, -12 + i * 5, -106.4, .5, 'rgba(32,20,14,.5)');
+      ell(g, 0, -113, 17, 3, '#cfa55a', .9); ell(g, 0, -113, 14, 1.8, '#a67c36', 0);
+      for (let i = 0; i < 5; i++) { const cx = -10 + i * 5; poly(g, [[cx - 2.4, -113], [cx + 2.4, -113], [cx, -119]], i % 2 ? '#e8d2a0' : '#d9bd7a', .6); }
+    });
   },
   gubbare(g, d, t) { // balloons on a stick
-    const hx = d > 0 ? 12 : -12; line(g, hx, -40, hx, -112, 1.5, '#d8c9a0');
-    const cols = ['#e2453a', '#3a8fe2', '#f2c23a', '#4fbf6a', '#d65ab8', '#f28a3a', '#9a6ae2'];
-    cols.forEach((c, i) => { const a = i / cols.length * Math.PI * 2, bx = hx + Math.cos(a) * 9 + Math.sin(t * 2 + i) * 1.2, by = -120 + Math.sin(a) * 6; line(g, hx, -110, bx, by + 5, 0.6, '#d8c9a0'); disc(g, bx, by, 5, c); disc(g, bx - 1.5, by - 2, 1.2, '#ffffffaa'); });
+    V(g, g => {
+      const hx = d > 0 ? 12 : -12; rod(g, hx, -40, hx, -112, 1.2, '#d8c9a0');
+      const cols = ['#e2453a', '#3a8fe2', '#f2c23a', '#4fbf6a', '#d65ab8', '#f28a3a', '#9a6ae2'];
+      cols.forEach((c, i) => { const a = i / cols.length * Math.PI * 2, bx = hx + Math.cos(a) * 9 + Math.sin(t * 2 + i) * 1.2, by = -121 + Math.sin(a) * 6; ln(g, hx, -110, bx, by + 6, .5, 'rgba(32,20,14,.75)'); ell(g, bx, by, 4.6, 5.6, c, .8); poly(g, [[bx - 1, by + 5.4], [bx + 1, by + 5.4], [bx, by + 7]], c, .5); ell(g, bx - 1.5, by - 2, 1.1, 1.7, 'rgba(255,255,255,.75)', 0, -.5); });
+    });
   },
-  raddi(g, d) { // sack over the shoulder
-    const sx = d > 0 ? -9 : 9; disc(g, sx, -92, 7, '#cdb88a'); disc(g, sx - d * 5, -86, 7, '#bfa874'); rect(g, sx - 1, -100, 3, 3, '#8a7448'); line(g, sx + d * 4, -94, sx + d * 9, -84, 1.5, '#8a7448');
+  raddi(g, d) { // jute sack over the shoulder
+    V(g, g => {
+      const sx = d > 0 ? -9 : 9;
+      blob(g, [[sx - d * 1, -101], [sx + d * 8, -96], [sx + d * 10, -84], [sx + d * 3, -77], [sx - d * 8, -79], [sx - d * 10, -90]], '#cdb27a', .9);
+      poly(g, [[sx + d * 3, -94], [sx + d * 10, -84], [sx + d * 3, -77], [sx - d * 1, -80]], '#a98d56', 0);
+      for (let i = 0; i < 4; i++) ln(g, sx - 6 + i * 4, -94 + i, sx - 4 + i * 4, -80, .4, 'rgba(32,20,14,.35)');
+      ln(g, sx - 3, -97, sx + 3, -96, 1.1, '#6b4a2a'); ell(g, sx, -101.4, 2.4, 1.2, '#a98d56', .6);
+      ln(g, sx + d * 4, -94, sx + d * 9, -84, 1.2, '#8a7448');
+    });
   },
-  bat(g, d, t) { const hx = d > 0 ? 8 : -8, sw = Math.sin(t * 6) * 4; line(g, hx, -38, hx + d * (10 + sw), -14, 3, '#c8a26a'); },
-  bag(g, d) { const hx = d > 0 ? -10 : 10; rect(g, hx - 5, -44, 10, 12, '#4f7a5a'); line(g, hx - 3, -44, hx, -52, 1, '#2e4a36'); line(g, hx + 3, -44, hx, -52, 1, '#2e4a36'); },
-  stick(g, d) { const hx = d > 0 ? 12 : -12; line(g, hx, -50, hx + d * 4, 0, 1.6, '#7a5a3a'); }
+  bat(g, d, t) { // cricket bat
+    V(g, g => {
+      const hx = d > 0 ? 8 : -8, sw = Math.sin(t * 6) * 4, x1 = hx + d * (10 + sw), y0 = -38, y1 = -14, dx = x1 - hx, dy = y1 - y0, n = Math.hypot(dx, dy), ux = dx / n, uy = dy / n, nx = -uy, ny = ux;
+      const p = (s, o) => [hx + ux * s + nx * o, y0 + uy * s + ny * o];
+      poly(g, [p(0, -1), p(11, -1), p(11, 1), p(0, 1)], '#4a3a2a', .7); poly(g, [p(11, -1), p(13, -3.2), p(n, -3.2), p(n, 3.2), p(13, 3.2), p(11, 1)], '#d9b57a', .8);
+      ln(g, ...p(14, 0), ...p(n - 1.4, 0), .6, 'rgba(32,20,14,.45)'); ln(g, ...p(0, 0), ...p(6, 0), 1.1, '#c8452c');
+    });
+  },
+  bag(g, d) { // cloth jhola with a leek and a bottle poking out
+    V(g, g => {
+      const hx = d > 0 ? -10 : 10;
+      for (const sx of [-3, 3]) ln(g, hx + sx, -43, hx, -53, .9, INK);
+      poly(g, [[hx - 3, -50], [hx - 2, -56], [hx - .5, -50]], '#5da04a', .6); poly(g, [[hx + 2, -49], [hx + 3.4, -57], [hx + 4, -48]], '#6fb858', .6);
+      blob(g, [[hx - 6, -44], [hx + 6, -44], [hx + 6.6, -34], [hx + 3, -31], [hx - 3, -31], [hx - 6.6, -34]], '#d9993a', .9); poly(g, [[hx + 2, -44], [hx + 6, -44], [hx + 6.6, -34], [hx + 3, -31], [hx + 1.6, -31]], '#b4742a', 0);
+      rrect(g, hx - 5, -41, 10, 1.8, '#c8452c', .6, 0); ell(g, hx - 1, -37, 1.6, 1.6, '#efe0bd', .5);
+    });
+  },
+  stick(g, d) { // walking stick with a crook
+    V(g, g => {
+      const hx = d > 0 ? 12 : -12, ex = hx + d * 4;
+      rod(g, hx, -50, ex, -2, 1.6, '#8a6038'); g.beginPath(); g.arc(hx - d * 2, -50, 2, d > 0 ? 0 : Math.PI, d > 0 ? Math.PI * 1.1 : Math.PI * 2.1, d < 0); g.lineWidth = 2.8; g.strokeStyle = INK; g.stroke(); g.lineWidth = 1.6; g.strokeStyle = tn('#8a6038'); g.stroke();
+      ell(g, ex, -1, 1.5, .9, '#2a2018', .5);
+    });
+  }
 };
 
 /* ---------- a walking person ---------- */
@@ -135,16 +196,35 @@ class Cow {
     if (T > this.stopUntil) { this.x += this.dir * 11 * dt; this.walk += dt * 3.2; }
     if ((this.dir > 0 && this.x > L.W + 60) || (this.dir < 0 && this.x < -60)) this.dead = true;
   }
-  draw(g) {
-    const d = this.dir, w = this.walk, c = this.col, dk = '#8a7a64', stop = Tapri.T < this.stopUntil;
-    for (const [lx, ph] of [[-14, 0], [-9, Math.PI], [10, Math.PI], [15, 0]]) { const sw = stop ? 0 : Math.sin(w + ph) * 3; line(g, d * lx, -16, d * (lx + sw), -1, 3.2, lx > 0 ? c : dk); rect(g, d * (lx + sw) - 1.5, -2, 3, 2, '#3a3028'); }
-    // body, hump, belly patch
-    disc(g, d * -6, -24, 11, c); disc(g, d * 7, -24, 11, c); rect(g, d > 0 ? -16 : -16, -34, 32, 18, c); disc(g, d * 9, -34, 5, c); disc(g, d * -2, -22, 5, '#b8a888');
-    line(g, d * -18, -30, d * -22, -12, 1.4, dk); disc(g, d * -22, -11, 1.8, '#3a3028'); // tail
-    // head, ears, horns, eye, muzzle (nods a little while standing)
-    const nod = stop ? Math.sin(Tapri.T * 1.6) * 1.5 : 0, hx = d * 24, hy = -30 + nod;
-    disc(g, hx, hy, 6.5, c); rect(g, hx + (d > 0 ? 2 : -8), hy + 1, 6, 6, '#e6b8a2'); line(g, hx - d * 2, hy - 5, hx - d * 6, hy - 11, 1.6, '#cbb48a'); line(g, hx + d * 2, hy - 5, hx + d * 5, hy - 11, 1.6, '#cbb48a');
-    rect(g, hx - d * 9 - 2, hy - 3, 5, 2, dk); disc(g, hx + d * 1, hy - 1, 1, '#1c1814');
+  draw(g) { // Indian street cow (zebu): hump, long face, curved horns, dewlap, thin jointed legs with hooves, swishing tail
+    const d = this.dir, w = this.walk, c = this.col, dk = sh(c, -.22), mk = sh(c, -.1), T = Tapri.T, stop = T < this.stopUntil, tint = '#a98a62';
+    V(g, g => {
+      const sw = (ph, amp) => stop ? 0 : Math.sin(w + ph) * amp, tube = (x0, y0, x1, y1, wd, col) => { ln(g, x0, y0, x1, y1, wd + 1.4, INK); ln(g, x0, y0, x1, y1, wd, col); };
+      const leg = (x, ph, col, rear) => { const s = sw(ph, 3.4), kx = x + s * .5 + (rear ? -1.6 : 1.2), hx = x + s; tube(x, -18, kx, -9, 3.4, col); tube(kx, -9, hx, -2.6, 2.2, col); poly(g, [[hx - 1.8, -3], [hx + 1.8, -3], [hx + 2.2, -.2], [hx - 2.2, -.2]], '#2e2620', .6); };
+      leg(-10, Math.PI, dk, true); leg(12, 0, dk, false); // far legs
+      // tail with tuft, swishing
+      const sx = Math.sin(T * (stop ? 2.4 : 3.6)) * (stop ? 4 : 2.4), tx = -22 + sx, ty = -13; g.beginPath(); g.moveTo(-18, -34); g.quadraticCurveTo(-23 + sx * .4, -26, tx, ty); g.lineWidth = 2.4; g.strokeStyle = INK; g.stroke(); g.lineWidth = 1.2; g.strokeStyle = tn(dk); g.stroke(); blob(g, [[tx - 1.6, ty], [tx + 1.6, ty], [tx + 2.2 + sx * .1, ty + 7], [tx - .4, ty + 9], [tx - 2.2, ty + 6]], '#3a2f26', .6);
+      // body barrel, rump, hump, belly shade, patch
+      blob(g, [[-19, -35], [-8, -39], [6, -39.5], [18, -34], [19, -24], [8, -15.6], [-8, -15.6], [-19, -22]], c, .9);
+      poly(g, [[-8, -15.6], [8, -15.6], [19, -24], [12, -19.6]], mk, 0); blob(g, [[-19, -35], [-8, -39], [6, -39.5], [18, -34], [19, -24], [8, -15.6], [-8, -15.6], [-19, -22]], null, .9);
+      blob(g, [[3, -38], [8, -45], [14, -42], [15, -36]], c, .9); ell(g, 9, -39.6, 5, 2.4, c, 0); // hump over the shoulder
+      blob(g, [[-14, -32], [-6, -35], [-2, -30], [-8, -25], [-14, -27]], tint, 0); // mottled patch
+      ln(g, -5, -22, 4, -22.6, .6, 'rgba(32,20,14,.25)');
+      leg(-15, 0, c, true); leg(16, Math.PI, c, false); // near legs
+      // neck + head (nods a little while standing)
+      const nod = stop ? Math.sin(T * 1.6) * 1.4 : 0; g.save(); g.translate(0, nod);
+      blob(g, [[12, -38], [20, -37], [27, -28], [26, -19], [17, -18], [11, -26]], c, .9); // neck
+      blob(g, [[27, -17], [20, -13], [13, -13], [15, -20], [22, -22]], dk, .8); // dewlap
+      blob(g, [[21, -38], [27, -39], [32, -33], [37, -24], [36, -19], [31, -18], [26, -23], [22, -29]], c, .9); // long face
+      ell(g, 35.2, -20.6, 3.2, 2.6, '#8a6a64', .8); ell(g, 36.4, -21.2, .7, .5, '#2a1c14', 0); // muzzle + nostril
+      ln(g, 32, -18.4, 36.6, -17.8, .6, INK);
+      blob(g, [[22, -36], [15, -39], [13, -36], [21, -33]], dk, .8); // ear
+      g.beginPath(); g.moveTo(26, -39); g.quadraticCurveTo(25, -44, 29, -46); g.lineWidth = 3; g.strokeStyle = INK; g.stroke(); g.lineWidth = 1.5; g.strokeStyle = tn('#efe6cc'); g.stroke(); // horn
+      g.beginPath(); g.moveTo(23.6, -38.6); g.quadraticCurveTo(21, -43, 23.4, -45.6); g.lineWidth = 2.6; g.strokeStyle = INK; g.stroke(); g.lineWidth = 1.2; g.strokeStyle = tn('#d8ccae'); g.stroke();
+      ell(g, 28.4, -31, 1.5, 1.2, '#ffffff', .5); ell(g, 28.7, -30.8, .8, .8, '#1c1814', 0); // eye
+      ln(g, 19, -33, 18, -26, 1.8, '#c8452c'); ell(g, 17.6, -24, 1.6, 1.8, '#d9b23a', .6); // red thread + brass bell
+      g.restore();
+    }, d);
   }
 }
 
@@ -172,7 +252,7 @@ Tapri.street = {
     for (let i = actors.length - 1; i >= 0; i--) if (actors[i].dead) actors.splice(i, 1);
   },
   // the ball of the gully-cricket kids (drawn after the actors so it is never hidden behind them)
-  drawExtras(c) { const a = ballOwner; if (!a || a.dead) return; const K0 = Art.K || 1; c.fillStyle = '#f4efe2'; c.fillRect(Math.round((a.ball.x - 1.5) * K0), Math.round((a.gy - 3 + a.ball.y) * K0), Math.round(3 * K0), Math.round(3 * K0)); },
+  drawExtras(c) { const a = ballOwner; if (!a || a.dead) return; const K0 = Art.K || 1; c.fillStyle = Art.tone('#f1ead6'); c.beginPath(); c.arc(a.ball.x * K0, (a.gy - 2.5 + a.ball.y) * K0, 1.7 * K0, 0, Math.PI * 2); c.fill(); c.lineWidth = .5 * K0; c.strokeStyle = '#20140e'; c.stroke(); },
   reset() { actors.length = 0; nextSpawn = Tapri.T + 6; ballOwner = null; },
   spawn(kind) { if (kind === 'vendor') vendor(pick(Object.keys(VENDORS))); else if (kind === 'kids') kids(); else if (kind === 'cow') actors.push(new Cow()); else if (kind === 'beggar') beggar(); else passer(); }
 };
