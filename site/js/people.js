@@ -196,6 +196,8 @@ const props = {
   agarbatti(x0, y0, x1, y1, lit) { limb(x0, y0, x1, y1, Z, '#a9986b'); if (lit) pe(x1, y1, Z, 2 * Z, '#dc9560'); },
   match(x, y, flame, t) { px(x, y, Z, 8 * Z, '#b5a06d'); if (flame) { oval(x, y - 3 * Z, 2 * Z, (4 + Math.sin(t * 20)) * Z, '#c8924c'); pe(x, y - 5 * Z, Z, 5 * Z, '#f3d394'); } }
 };
+// a theme can redraw any held prop: actors.props = { glass(ctx, ox, oy, ...sameArgs) {...} } — ctx is the actor/stage canvas, (ox, oy) its origin offset; args are in render px like the built-ins
+for (const k of Object.keys(props)) { const base = props[k]; props[k] = (...a) => (hooks.props && hooks.props[k] ? hooks.props[k](g, OX, OY, ...a) : base(...a)); }
 /* ---------- figures ---------- */
 const BW = 170 * K, BH = 150 * K, ORIGX = 85 * K, ORIGY = 126 * K;
 function begin(gctx, light) { g = gctx; OX = ORIGX; OY = ORIGY; LD = light; lastC = null; }
@@ -203,8 +205,8 @@ function measure(s, pose = {}, seated = false) {
   const owner = !!pose.extra, h = (s.h || 1) * (owner ? 1.08 : 1), d = pose.dir || 1, ph = pose.phase || 0, moving = pose.moving ? 1 : 0, cr = pose.crouch || 0, thick = s.mass || 1;
   let amp = moving; const hd = pose.holder; if (hd && !seated) { hd._amp = hd._amp === undefined ? moving : hd._amp + (moving - hd._amp) * (1 - Math.exp(-(pose.dt || .016) * 9)); amp = hd._amp; }
   const leg = i => { const p = ph + i * Math.PI, th = amp * .36 * Math.sin(p) + (1 - amp) * (i ? -.055 : .06) + cr * .7, kn = amp * (.13 + .66 * Math.max(0, Math.cos(p))) + (1 - amp) * .06 + cr * 1.45, kx = 24 * h * Math.sin(th) * d, ky = 24 * h * Math.cos(th), ax = kx + 23 * h * Math.sin(th - kn) * d, ay = ky + 23 * h * Math.cos(th - kn); return { kx, ky, ax, ay, phase: p }; };
-  const legs = [leg(0), leg(1)], hipY = seated ? -28 : -3 - Math.max(...legs.map(l => l.ay)), bob = moving && !seated ? Math.abs(Math.sin(ph)) * .7 : 0, lean = pose.lean || 0, sx = (pose.sway || 0) + lean * .35 * d + (seated ? (s.posture || 0) : 0), shY = hipY - 33 * h + (pose.dip || 0) + (seated ? (pose.dy || 0) + lean : bob), headTop = shY - 19 + (pose.headDy || 0), headX = sx + (moving ? d * 1.3 : 0) + (pose.hdx || 0), hw = (moving ? 6 : 10.5) * thick;
-  return { shY, headTop, mouth: [headX + 1.5 + (pose.fx || 0) * .65, headTop + 14 + (pose.fy || 0) * .3], ear: [headX + 7.3, headTop + 9], chest: [sx, shY + 14], restL: [sx - 11, shY + 34.8], restR: [sx + 11, shY + 34.4], hip: [pose.sway || 0, hipY], height: -headTop + 3, halfWidth: hw, legs, h, sx, headX, moving, ph, d, amp };
+  const legs = [leg(0), leg(1)], hipY = seated ? -28 : -3 - Math.max(...legs.map(l => l.ay)), bob = moving && !seated ? Math.abs(Math.sin(ph)) * .7 : 0, lean = pose.lean || 0, sx = (pose.sway || 0) + lean * .35 * d + (seated ? (s.posture || 0) : 0), shY = hipY - 33 * h + (pose.dip || 0) + (seated ? (pose.dy || 0) + lean : bob), F = hooks.face || { headLen: 19, mouthY: 14, earY: 9 }, headTop = shY - F.headLen + (pose.headDy || 0), headX = sx + (moving ? d * 1.3 : 0) + (pose.hdx || 0), hw = (moving ? 6 : 10.5) * thick;
+  return { shY, headTop, mouth: [headX + 1.5 + (pose.fx || 0) * .65, headTop + F.mouthY + (pose.fy || 0) * .3], ear: [headX + 7.3, headTop + F.earY], chest: [sx, shY + 14], restL: [sx - 11, shY + 34.8], restR: [sx + 11, shY + 34.4], hip: [pose.sway || 0, hipY], height: -headTop + 3, halfWidth: hw, legs, h, sx, headX, moving, ph, d, amp };
 }
 const metrics = (s, pose, seated = false) => measure(s, pose, seated);
 function shoes(s, x, y, dir, far = false) { const c = far ? SH(s.shoe, -.15) : s.shoe; shape([[x - 6 * Z, y - 4 * Z], [x + 5 * Z, y - 4 * Z], [x + (dir > 0 ? 11 : 7) * Z, y + Z], [x + 10 * Z, y + 4 * Z], [x - 7 * Z, y + 3 * Z]], s.sandals ? '#665944' : c); px(x - 6 * Z, y + 3 * Z, 16 * Z, 2 * Z, '#303b3c'); if (s.sandals) { px(x - 3 * Z, y - 5 * Z, 8 * Z, 5 * Z, s.skin); px(x - 3 * Z, y - 2 * Z, 8 * Z, 2 * Z, '#9b825b'); } else px(x - Z, y - 3 * Z, 7 * Z, Z, SH(c, .2)); }
@@ -212,7 +214,7 @@ function facePose(s, pose, m) { return { fx: pose.fx ?? (m.moving ? m.d * 1.5 : 
 // walking / standing figure. pose: {dir, phase, moving, lean, dip, look, fx, fy, expr, blink, t, crouch, arms:{L:[x,y]|null, R:[x,y]|null}, extra, glow, headDy, sway}
 // Standing still = facing the viewer (wide shoulders); moving = three-quarter side view.
 function stand(gctx, s, pose = {}, light) {
-  begin(gctx, light); const m = measure(s, pose), { legs, shY, sx, h, moving, d, ph, amp } = m, hipY = m.hip[1], wide = m.halfWidth;
+  begin(gctx, light); if (hooks.stand) return hooks.stand(gctx, s, pose, light); const m = measure(s, pose), { legs, shY, sx, h, moving, d, ph, amp } = m, hipY = m.hip[1], wide = m.halfWidth;
   const farX = sx - (moving ? d * 5.5 : wide), nearX = sx + (moving ? d * 6.5 : wide);
   const targets = ['L', 'R'].map((side, i) => { const swing = ph + (i ? 0 : Math.PI), ang = Math.sin(swing) * .5, shx = i ? nearX : farX, len = 31.2 - Math.max(0, Math.sin(ang)) * 3.4, rest = i ? m.restR : m.restL, walk = [shx + d * Math.sin(ang) * len, shY + 3 + Math.cos(ang) * len], fallback = [rest[0] + (walk[0] - rest[0]) * amp, rest[1] + (walk[1] - rest[1]) * amp]; return sm(pose, side, pose.arms?.[side] || fallback).map(v => v * K); });
   const far = HK('arm')(s, farX * K, (shY + 3) * K, ...targets[0], moving ? d : 1, true);
@@ -226,7 +228,7 @@ function stand(gctx, s, pose = {}, light) {
 }
 // seated figure. origin = ground under the stool; seat top is 26px up. pose: {sx (sway), lean, look, expr, arms:{L,R}, legPose, tap, jig, headDy, fx, fy}
 function sit(gctx, s, pose = {}, light) {
-  begin(gctx, light); const m = measure(s, pose, true), { shY, sx, h } = m, seat = -26, pants = s.pants, spread = pose.legPose === 2 ? 2 : 0, lk = [sx - 7, seat + 2], rk = [sx + 7, seat + 2], la = [sx - 8 - spread, -3], ra = pose.legPose === 1 ? [sx - 3, -8] : [sx + 8 + spread + (pose.jig || 0), -3 - (pose.tap || 0)];
+  begin(gctx, light); if (hooks.sit) return hooks.sit(gctx, s, pose, light); const m = measure(s, pose, true), { shY, sx, h } = m, seat = -26, pants = s.pants, spread = pose.legPose === 2 ? 2 : 0, lk = [sx - 7, seat + 2], rk = [sx + 7, seat + 2], la = [sx - 8 - spread, -3], ra = pose.legPose === 1 ? [sx - 3, -8] : [sx + 8 + spread + (pose.jig || 0), -3 - (pose.tap || 0)];
   // legs (front view): thighs are short wedges, shins hang to the shoes
   shape([[(sx - 12) * K, (seat - 6) * K], [(sx + 12) * K, (seat - 6) * K], [rk[0] * K + 7 * Z, rk[1] * K], [lk[0] * K - 6 * Z, lk[1] * K]], SH(pants, -.08));
   for (const [k, foot, far] of [[lk, la, true], [rk, ra, false]]) { limb(k[0] * K, k[1] * K, foot[0] * K, foot[1] * K, (s.wrap ? 17 : 13) * Z, far ? SH(pants, -.12) : pants); px(k[0] * K - 4 * Z, k[1] * K, 8 * Z, Z, SH(pants, -.27)); shoes(s, foot[0] * K, foot[1] * K, foot === la ? -1 : 1, far); }
@@ -235,5 +237,5 @@ function sit(gctx, s, pose = {}, light) {
   const tl = sm(pose, 'L', pose.arms?.L || m.restL).map(v => v * K), tr = sm(pose, 'R', pose.arms?.R || m.restR).map(v => v * K), left = HK('arm')(s, (sx - m.halfWidth) * K, (shY + 3) * K, ...tl, 1, false), right = HK('arm')(s, (sx + m.halfWidth) * K, (shY + 3) * K, ...tr, -1, false);
   return { shY: shY * K, head: { x: m.headX * K, top: m.headTop * K }, handL: left, handR: right, sh: sx * K, mouth: m.mouth.map(v => v * K) };
 }
-window.Sprites = { hooks, set envPeople(v) { envPeople = v; }, get envPeople() { return envPeople; }, armRest, makeStyle, metrics, stand, sit, props, BW, BH, ORIGX, ORIGY, shape, oval, limb, ik, px, pe, arm, head, headwear, torso, begin, setG(c, o) { g = c; lastC = null; if (o) { OX = o.x; OY = o.y; } }, rnd, pick };
+window.Sprites = { smooth: sm, measure, K, hooks, set envPeople(v) { envPeople = v; }, get envPeople() { return envPeople; }, armRest, makeStyle, metrics, stand, sit, props, BW, BH, ORIGX, ORIGY, shape, oval, limb, ik, px, pe, arm, head, headwear, torso, begin, setG(c, o) { g = c; lastC = null; if (o) { OX = o.x; OY = o.y; } }, rnd, pick };
 })();

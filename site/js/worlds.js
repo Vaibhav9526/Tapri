@@ -3,6 +3,8 @@
 window.TAPRI_WORLD_FILES = [
   'themes/retro.js',
   'themes/comic.js',
+  'themes/chitra.js',
+  'themes/chitra-props.js',
   'envs/shared.js',
   'envs/city.js',
   'envs/village.js',
@@ -11,5 +13,8 @@ window.TAPRI_WORLD_FILES = [
   'envs/hill.js',
   'envs/coast.js',
   'envs/desert.js',
-  'envs/railway.js'
+  'envs/railway.js',
+  'envs/mohalla-backdrops.js',
+  'envs/mohalla.js',
+  'envs/mohalla-painted.js'
 ];

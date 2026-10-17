@@ -54,7 +54,7 @@ try {
     const transition = await p.evaluate(() => { const p = Tapri.people.find(p => p.kind === 'sitter'); p.glass = p.plate = 0; p.act = 'idle'; p.wants = false; p.state = 'sitdown'; p.t0 = Tapri.T; __sim(.65); const seated = p.state; p.state = 'standup'; p.t0 = Tapri.T; __sim(.65); return { seated, standing: p.state }; });
     assert.equal(transition.seated, 'seated'); assert.equal(transition.standing, 'leave');
     const ui = await p.evaluate(() => { document.getElementById('btnRadio').click(); const open = document.getElementById('panel').classList.contains('open'); const youtube = !!document.getElementById('ytLoad').onclick; document.getElementById('closePanel').click(); document.getElementById('btnWorld').click(); const worlds = document.querySelectorAll('#envs button').length, themes = document.querySelectorAll('#themes button').length; document.getElementById('closeWorld').click(); return { open, youtube, worlds, themes }; });
-    assert(ui.open && ui.youtube && ui.worlds === 8 && ui.themes === 2);
+    assert(ui.open && ui.youtube && ui.worlds >= 8 && ui.themes >= 2);
     await p.evaluate(() => { Tapri.hooks.bubble(Tapri.owner, 'भैया, दो गरम चाय और समोसे!', 60000, 'order'); });
     await new Promise(r => setTimeout(r, 50)); await shot(theme + '-devanagari-balloon');
     const font = await p.evaluate(() => getComputedStyle(document.querySelector('.bub.order')).fontFamily); assert(/Noto Sans Devanagari/.test(font));

@@ -42,3 +42,6 @@ body[data-theme="retro"] ::selection { color: #342a22; background: #d8bd83; }
   body[data-theme="comic"] .bub, body[data-theme="retro"] .bub { transition: none; }
 }
 
+
+/* chitra: smooth illustrated people and stall (not pixel art) */
+body[data-theme="chitra"] #cv { image-rendering: auto; }

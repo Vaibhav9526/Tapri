@@ -7,11 +7,53 @@
 <title>Tapri Radio</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Ctext y=%2712.5%27 font-size=%2713%27%3E%E2%98%95%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@500;700&family=Pixelify+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@500;700&family=Inter:wght@400;500;600;700&family=Pixelify+Sans:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="themes.css">
 </head>
 <body>
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+<symbol id="i-cup" viewBox="0 0 24 24"><path d="M10 2v2"/><path d="M14 2v2"/><path d="M6 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+<symbol id="i-power" viewBox="0 0 24 24"><path d="M12 2v10"/><path d="M18.4 6.6a9 9 0 1 1-12.77.04"/></symbol>
+<symbol id="i-mic" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/></symbol>
+<symbol id="i-mic-off" viewBox="0 0 24 24"><path d="m2 2 20 20"/><path d="M18.89 13.23A7.12 7.12 0 0 0 19 12v-2"/><path d="M5 10v2a7 7 0 0 0 12 5"/><path d="M15 9.34V5a3 3 0 0 0-5.68-1.33"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12"/><path d="M12 19v3"/></symbol>
+<symbol id="i-headphones" viewBox="0 0 24 24"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></symbol>
+<symbol id="i-headphones-off" viewBox="0 0 24 24"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 14.5-7.1"/><path d="M21 12v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/><path d="m2 2 20 20"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+<symbol id="i-sliders" viewBox="0 0 24 24"><path d="M21 4h-7"/><path d="M10 4H3"/><path d="M21 12h-9"/><path d="M8 12H3"/><path d="M21 20h-5"/><path d="M12 20H3"/><path d="M14 2v4"/><path d="M8 10v4"/><path d="M16 18v4"/></symbol>
+<symbol id="i-focus" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></symbol>
+<symbol id="i-login" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+<symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+<symbol id="i-pencil" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></symbol>
+<symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.7-1.1 2-1.7 3.3-1.7H22"/><path d="m18 2 4 4-4 4"/><path d="M2 6h1.9c1.5 0 2.9.9 3.6 2.2"/><path d="M22 18h-5.9c-1.3 0-2.6-.7-3.3-1.8l-.5-.8"/><path d="m18 14 4 4-4 4"/></symbol>
+<symbol id="i-volume" viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></symbol>
+<symbol id="i-volume-off" viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></symbol>
+<symbol id="i-sunrise" viewBox="0 0 24 24"><path d="M12 2v8"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="m19.07 10.93-1.41 1.41"/><path d="M22 22H2"/><path d="m8 6 4-4 4 4"/><path d="M16 18a4 4 0 0 0-8 0"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></symbol>
+<symbol id="i-sunset" viewBox="0 0 24 24"><path d="M12 10V2"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="m19.07 10.93-1.41 1.41"/><path d="M22 22H2"/><path d="m16 6-4 4-4-4"/><path d="M16 18a4 4 0 0 0-8 0"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+<symbol id="i-radio" viewBox="0 0 24 24"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"/></symbol>
+<symbol id="i-rain" viewBox="0 0 24 24"><path d="M4 14.9A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 2.5 8.2"/><path d="M16 14v6"/><path d="M8 14v6"/><path d="M12 16v6"/></symbol>
+<symbol id="i-storm" viewBox="0 0 24 24"><path d="M6 16.3A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 .5 9"/><path d="m13 12-3 5h4l-3 5"/></symbol>
+<symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></symbol>
+<symbol id="i-building" viewBox="0 0 24 24"><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></symbol>
+<symbol id="i-building2" viewBox="0 0 24 24"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></symbol>
+<symbol id="i-waves" viewBox="0 0 24 24"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></symbol>
+<symbol id="i-mountain" viewBox="0 0 24 24"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></symbol>
+<symbol id="i-train" viewBox="0 0 24 24"><rect width="16" height="16" x="4" y="3" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="m8 19-2 3"/><path d="m18 22-2-3"/><path d="M8 15h.01"/><path d="M16 15h.01"/></symbol>
+<symbol id="i-sprout" viewBox="0 0 24 24"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/></symbol>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></symbol>
+<symbol id="i-tent" viewBox="0 0 24 24"><path d="M3.5 21 14 3"/><path d="M20.5 21 10 3"/><path d="M15.5 21 12 15l-3.5 6"/><path d="M2 21h20"/></symbol>
+<symbol id="i-comic" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+<symbol id="i-leaf" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></symbol>
+<symbol id="i-chevron-l" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+<symbol id="i-chevron-r" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+</svg>
 <div id="viewport">
   <canvas id="bd" width="64" height="43" aria-hidden="true"></canvas>
   <div id="stage">
@@ -21,7 +63,7 @@
 </div>
 
 <header id="hud">
-  <div class="hud-l"><div class="brand"><span class="cup">☕</span><span class="bt"><b>Tapri Radio</b><small id="placeTxt"></small></span></div><button id="pill" class="pill" aria-label="Now playing - open radio"><span class="eq" id="eq"><i></i><i></i><i></i></span><span id="pillTxt">Lo-fi Chai</span></button></div>
+  <div class="hud-l"><div class="brand"><span class="cup"><svg class="i" aria-hidden="true"><use href="#i-cup"/></svg></span><span class="bt"><b>Tapri Radio</b><small id="placeTxt"></small></span></div><button id="pill" class="pill" aria-label="Now playing - open radio"><span class="eq" id="eq"><i></i><i></i><i></i></span><span id="pillTxt">Lo-fi Chai</span></button></div>
   <div class="hud-r">
     <button id="btnMute" class="round" aria-label="Mute all sounds" title="Mute / unmute (M)"><svg viewBox="0 0 24 24" width="22" height="22"><path id="icoSpk" d="M3 9v6h4l5 4V5L7 9H3z" fill="currentColor"/><g id="icoWaves" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><path d="M15.5 8.5a5 5 0 010 7"/><path d="M18.3 5.7a9 9 0 010 12.6"/></g><path id="icoX" d="M15 9l6 6M21 9l-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none"/></svg></button>
     <button id="btnZoom" class="round" aria-label="Zoom in or out" title="Zoom in / out (double-tap)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21M8 10.5h5M10.5 8v5"/></svg></button>
@@ -31,15 +73,15 @@
 </header>
 
 <nav id="dock" aria-label="Time of day">
-  <button data-scene="morning"><i>🌅</i><span>Morning</span></button>
-  <button data-scene="day"><i>☀️</i><span>Day</span></button>
-  <button data-scene="dusk"><i>🌇</i><span>Dusk</span></button>
-  <button data-scene="night"><i>🌙</i><span>Night</span></button>
-  <button data-scene="auto" class="on"><i>⏱️</i><span>Auto</span></button>
+  <button data-scene="morning"><i><svg class="i" aria-hidden="true"><use href="#i-sunrise"/></svg></i><span>Morning</span></button>
+  <button data-scene="day"><i><svg class="i" aria-hidden="true"><use href="#i-sun"/></svg></i><span>Day</span></button>
+  <button data-scene="dusk"><i><svg class="i" aria-hidden="true"><use href="#i-sunset"/></svg></i><span>Dusk</span></button>
+  <button data-scene="night"><i><svg class="i" aria-hidden="true"><use href="#i-moon"/></svg></i><span>Night</span></button>
+  <button data-scene="auto" class="on"><i><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg></i><span>Auto</span></button>
 </nav>
 
 <aside id="world" aria-label="Look and place">
-  <header><div class="ttl">Look &amp; place</div><button class="icon" id="closeWorld" aria-label="Close">✕</button></header>
+  <header><div class="ttl">Look &amp; place</div><button class="icon" id="closeWorld" aria-label="Close"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button></header>
   <h3>Look</h3><div id="themes" class="pick"></div>
   <h3>Place</h3><div id="envs" class="pick envs"></div>
 </aside>
@@ -48,11 +90,11 @@
   <div class="grab" id="grab"></div>
   <header>
     <div class="ttl"><span class="led" id="led"></span>Tapri Radio</div>
-    <button class="icon" id="power" title="Radio on/off" aria-label="Radio power">⏻</button>
-    <button class="icon" id="closePanel" aria-label="Close">✕</button>
+    <button class="icon" id="power" title="Radio on/off" aria-label="Radio power"><svg class="i" aria-hidden="true"><use href="#i-power"/></svg></button>
+    <button class="icon" id="closePanel" aria-label="Close"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button>
   </header>
 
-  <div class="tabs" id="tabs" role="tablist"><button data-t="radio" class="on" role="tab">📻 Radio</button><button data-t="amb" role="tab">🌧️ Ambience</button></div>
+  <div class="tabs" id="tabs" role="tablist"><button data-t="radio" class="on" role="tab"><svg class="i" aria-hidden="true"><use href="#i-radio"/></svg> Radio</button><button data-t="amb" role="tab"><svg class="i" aria-hidden="true"><use href="#i-rain"/></svg> Ambience</button></div>
 
   <div class="tab" data-tab="radio">
   <section class="radio">
@@ -61,9 +103,9 @@
       <div class="sname" id="sname">Lo-fi Chai</div>
       <div class="scale"><div id="needle"></div></div>
       <div class="tuner">
-        <button class="icon" id="prevSt" aria-label="Previous station">◀</button>
+        <button class="icon" id="prevSt" aria-label="Previous station"><svg class="i" aria-hidden="true"><use href="#i-chevron-l"/></svg></button>
         <div id="stations"></div>
-        <button class="icon" id="nextSt" aria-label="Next station">▶</button>
+        <button class="icon" id="nextSt" aria-label="Next station"><svg class="i" aria-hidden="true"><use href="#i-chevron-r"/></svg></button>
       </div>
     </div>
     <label class="row"><span>Radio volume</span><input type="range" id="vMusic" min="0" max="1" step="0.01"></label>
@@ -90,7 +132,7 @@
   <section>
     <h3>Moods</h3>
     <div class="chips" id="presets">
-      <button data-p="busy">🏙️ Busy chowk</button><button data-p="calm">🌿 Calm corner</button><button data-p="rain">☔ Baarish</button><button data-p="storm">⛈️ Toofan</button><button data-p="night">🌙 Raat ki chai</button><button data-p="mela">🎪 Mela</button><button data-p="music">🎵 Just music</button>
+      <button data-p="busy"><svg class="i" aria-hidden="true"><use href="#i-building"/></svg> Busy chowk</button><button data-p="calm"><svg class="i" aria-hidden="true"><use href="#i-leaf"/></svg> Calm corner</button><button data-p="rain"><svg class="i" aria-hidden="true"><use href="#i-rain"/></svg> Baarish</button><button data-p="storm"><svg class="i" aria-hidden="true"><use href="#i-storm"/></svg> Toofan</button><button data-p="night"><svg class="i" aria-hidden="true"><use href="#i-moon"/></svg> Raat ki chai</button><button data-p="mela"><svg class="i" aria-hidden="true"><use href="#i-tent"/></svg> Mela</button><button data-p="music"><svg class="i" aria-hidden="true"><use href="#i-music"/></svg> Just music</button>
     </div>
     <h3>Mixer</h3>
     <label class="row"><span>Crowd &amp; gossip</span><input type="range" data-k="crowd" min="0" max="1" step="0.01"></label>
@@ -102,25 +144,108 @@
     <label class="row"><span>Street moments</span><input type="range" data-k="events" min="0" max="1" step="0.01"></label>
     <p class="fine">Street moments: thunder in the rain, cycle bells, a far-off truck horn, a cooker whistle, a gust of wind.</p>
     <label class="row"><span>Master</span><input type="range" data-k="master" min="0" max="1" step="0.01"></label>
-    <div class="chips"><button id="evTest">▶ Surprise me</button></div>
+    <div class="chips"><button id="evTest"><svg class="i" aria-hidden="true"><use href="#i-chevron-r"/></svg> Surprise me</button></div>
   </section>
   </div>
 </aside>
 
 <div id="intro">
-  <div class="card">
+  <div class="hero">
     <div class="steam"></div>
     <h1>Tapri Radio</h1>
     <p class="hi">बैठो भाई, चाय आ रही है</p>
-    <p class="sub">A living chai tapri with a radio. Eight places, four times of day, your own YouTube playlist — and the whole neighbourhood chatting around you.</p>
-    <ul class="feat"><li>🎧 Best with headphones</li><li>📻 Radio + your playlist</li><li>🗣️ Hindi chit-chat &amp; stories</li><li>⛈️ Rain, thunder &amp; traffic</li></ul>
-    <button id="enter">Baith jaao</button>
+    <p class="sub">A living chai tapri with a radio. Sit with friends, share the music and talk over a cup of chai.</p>
+
+    <div class="join-card">
+      <div class="who">
+        <button type="button" class="av-frame" id="avPrev-wrap" aria-label="Change your character"><canvas id="avPrev" width="148" height="224" aria-hidden="true"></canvas></button>
+        <div class="who-r">
+          <label for="rmName">Your name</label>
+          <input id="rmName" maxlength="16" placeholder="e.g. Asha" autocomplete="nickname">
+          <div class="who-btns"><button type="button" id="avEdit" class="soft"><svg class="i" aria-hidden="true"><use href="#i-pencil"/></svg> Customize</button><button type="button" id="avShuffle" class="soft" title="Random character" aria-label="Random character"><svg class="i" aria-hidden="true"><use href="#i-shuffle"/></svg></button></div>
+        </div>
+      </div>
+
+      <div class="seg" role="tablist"><button type="button" id="tabCreate" class="on" role="tab">Create a room</button><button type="button" id="tabJoin" role="tab">Join with code</button></div>
+      <div class="pane" id="paneCreate">
+        <p>Get a 4-letter code and share it. Up to 6 friends sit at your stall, hear the same radio and talk together.</p>
+        <button type="button" id="rmNew" class="cta"><svg class="i" aria-hidden="true"><use href="#i-cup"/></svg> Create room</button>
+      </div>
+      <div class="pane" id="paneJoin" hidden>
+        <input id="rmCode" maxlength="8" placeholder="CODE" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-label="Room code">
+        <button type="button" id="rmJoin" class="cta">Join room</button>
+      </div>
+      <label class="rm-mic"><input type="checkbox" id="rmMic" checked> Join with my microphone</label>
+      <p id="rmErr" class="err" role="alert"></p>
+    </div>
+
+    <button id="enter" class="solo">or just sit alone — Baith jaao</button>
     <p class="keys"><kbd>M</kbd> mute · <kbd>R</kbd> radio · <kbd>W</kbd> place · <kbd>1</kbd>–<kbd>4</kbd> time of day</p>
   </div>
+</div>
+
+<div class="modal" id="avatarEd" hidden role="dialog" aria-modal="true" aria-label="Customize your character">
+  <div class="sheet">
+    <header><h3>Your character</h3><button type="button" id="avClose" class="x" aria-label="Close"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button></header>
+    <div class="ed">
+      <div class="ed-prev"><canvas id="avBig" width="200" height="300"></canvas>
+        <input id="avName" maxlength="16" placeholder="Your name" aria-label="Your name">
+        <button type="button" id="avShuffle2" class="soft"><svg class="i" aria-hidden="true"><use href="#i-shuffle"/></svg> Surprise me</button></div>
+      <div class="ed-body" id="avBody"></div>
+    </div>
+    <footer><button type="button" id="avDone" class="cta">Done</button></footer>
+  </div>
+</div>
+
+<div class="modal" id="voiceSet" hidden role="dialog" aria-modal="true" aria-label="Voice settings">
+  <div class="sheet vs">
+    <header><h3>Voice settings</h3><button type="button" id="vsClose" class="x" aria-label="Close"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button></header>
+    <div class="vs-body">
+      <div id="vsStartBox"><p class="vs-empty">Your microphone isn't on yet.</p><button type="button" id="vsStart" class="soft"><svg class="i" aria-hidden="true"><use href="#i-mic"/></svg> Turn on microphone</button></div>
+      <p id="vsMsg" class="err" role="alert"></p>
+      <h4>Input</h4>
+      <label class="f">Microphone<select id="vsIn"></select></label>
+      <label class="f">Input volume <em id="vsInVolN"></em><input type="range" id="vsInVol" min="0" max="2" step="0.01"></label>
+      <div class="f">Input mode
+        <div class="chips"><button type="button" class="chip" data-mode="vad">Voice activity</button><button type="button" class="chip" data-mode="ptt">Push to talk</button></div>
+      </div>
+      <div id="vsVadBox" class="f">Input sensitivity <small>— sound above the line is sent</small>
+        <div class="meter"><i id="vsLevel"></i><b id="vsMark"></b></div>
+        <input type="range" id="vsSens" min="0" max="1" step="0.005" aria-label="Input sensitivity">
+      </div>
+      <div id="vsPttBox" class="f" hidden>Shortcut <button type="button" id="vsKey" class="key"></button>
+        <div class="meter"><i id="vsLevel2"></i></div><small>Hold the key to talk.</small></div>
+      <div class="f" id="vsLive"><label class="chk"><input type="checkbox" id="vsMonitor"> Hear myself <small>(use headphones)</small></label></div>
+      <h4>Voice processing</h4>
+      <label class="chk"><input type="checkbox" id="vsEcho"> Echo cancellation</label>
+      <label class="chk"><input type="checkbox" id="vsNoise"> Noise suppression</label>
+      <label class="chk"><input type="checkbox" id="vsAgc"> Automatic gain control</label>
+      <h4>Output</h4>
+      <label class="f">Speakers<select id="vsOut"></select></label>
+      <label class="f">Everyone's volume <em id="vsOutVolN"></em><input type="range" id="vsOutVol" min="0" max="1" step="0.01"></label>
+      <h4>People</h4>
+      <div id="vsPeers"></div>
+    </div>
+    <footer><button type="button" id="vsDone" class="cta">Done</button></footer>
+  </div>
+</div>
+
+<div id="roomBar" hidden>
+  <button type="button" id="rbCode" title="Copy invite link"><span class="cup"><svg class="i" aria-hidden="true"><use href="#i-cup"/></svg></span><b id="rbCodeTxt">----</b></button>
+  <span id="rbCount" title="People in this room"><svg class="i" aria-hidden="true"><use href="#i-users"/></svg> 1</span>
+  <i class="sep"></i>
+  <button type="button" id="rbMic" title="Join voice chat"><svg class="i" aria-hidden="true"><use href="#i-mic"/></svg> Join voice</button>
+  <button type="button" id="rbDeaf" title="Deafen" hidden><svg class="i" aria-hidden="true"><use href="#i-headphones"/></svg></button>
+  <i class="sep"></i>
+  <button type="button" id="rbFocus" title="Focus bench: show only the people in this room"><svg class="i" aria-hidden="true"><use href="#i-focus"/></svg></button>
+  <button type="button" id="rbLook" title="Customize your character"><svg class="i" aria-hidden="true"><use href="#i-user"/></svg></button>
+  <button type="button" id="rbSet" title="Voice settings"><svg class="i" aria-hidden="true"><use href="#i-sliders"/></svg></button>
+  <button type="button" id="rbLeave" title="Leave room" aria-label="Leave room"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button>
 </div>
 <div id="flash" aria-hidden="true"></div>
 <div id="toast" role="status" aria-live="polite"></div>
 
+<script src="js/icons.js"></script>
 <script src="js/config.js"></script>
 <script src="js/stories.js"></script>
 <script src="js/dialogues.js"></script>
@@ -131,8 +256,12 @@
 <script src="js/owner.js"></script>
 <script src="js/crowd.js"></script>
 <script src="js/dog.js"></script>
+<script src="js/street.js"></script>
 <script src="js/stage.js"></script>
 <script src="js/worlds.js"></script>
 <script src="js/main.js"></script>
+<script src="js/avatar.js"></script>
+<script src="js/voice.js"></script>
+<script src="js/multi.js"></script>
 </body>
 </html>

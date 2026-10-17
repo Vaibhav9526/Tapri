@@ -22,7 +22,7 @@ try {
     }
     return all;
   });
-  assert.equal(checks.length, 64);
+  assert.equal(checks.length, 2 * 4 * (await p.evaluate(() => Object.keys(Art.ENVS).length)));
   for (const theme of ['retro', 'comic']) {
     const image = await p.evaluate(theme => {
       Art.build('day', 'village', theme); for (const k of Object.keys(Sprites.hooks)) delete Sprites.hooks[k]; Object.assign(Sprites.hooks, Art.theme.actors); Sprites.envPeople = Art.env.people;

@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: tapri
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server/index.mjs
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      # optional: a TURN relay so voice works on strict networks (e.g. Metered / Twilio). Leave blank to use STUN only.
+      - key: TURN_URL
+        sync: false
+      - key: TURN_USER
+        sync: false
+      - key: TURN_PASS
+        sync: false
