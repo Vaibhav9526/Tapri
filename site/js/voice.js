@@ -87,10 +87,10 @@ function paintPeers() {
   for (const { id, name } of list) {
     const p = peers.get(id) || { vol: 1, muted: false }, r = document.createElement('div'); r.className = 'vs-peer';
     const n = document.createElement('span'); n.textContent = name; const sl = document.createElement('input'); sl.type = 'range'; sl.min = 0; sl.max = 1; sl.step = 0.01; sl.value = p.vol; sl.setAttribute('aria-label', name + ' volume');
-    const mu = document.createElement('button'); mu.type = 'button'; mu.textContent = p.muted ? '🔇' : '🔊'; mu.title = p.muted ? 'Unmute ' + name : 'Mute ' + name;
+    const mu = document.createElement('button'); mu.type = 'button'; mu.innerHTML = ico(p.muted ? 'volume-off' : 'volume'); mu.title = p.muted ? 'Unmute ' + name : 'Mute ' + name;
     const upd = () => { const q = peers.get(id); if (q) { q.vol = +sl.value; q.muted = p.muted; applyPeer(q); } else { /* not connected yet */ } };
     sl.oninput = () => { p.vol = +sl.value; const q = peers.get(id); if (q) { q.vol = p.vol; applyPeer(q); } };
-    mu.onclick = () => { p.muted = !p.muted; mu.textContent = p.muted ? '🔇' : '🔊'; const q = peers.get(id); if (q) { q.muted = p.muted; applyPeer(q); } };
+    mu.onclick = () => { p.muted = !p.muted; mu.innerHTML = ico(p.muted ? 'volume-off' : 'volume'); const q = peers.get(id); if (q) { q.muted = p.muted; applyPeer(q); } };
     r.append(n, sl, mu); box.appendChild(r);
   }
 }

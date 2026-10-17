@@ -126,10 +126,11 @@ function placeBubbles() {
 const world = { env: 'village', theme: 'retro' };
 function applyWorldHooks() { const th = Art.THEMES[world.theme] || Art.THEMES.retro, env = Art.ENVS[world.env] || Art.ENVS.city; for (const k of Object.keys(Sprites.hooks)) delete Sprites.hooks[k]; Object.assign(Sprites.hooks, th.actors || {}); Sprites.envPeople = env.people || null; TA.setEnvMix(env.mix); }
 function setWorld(o) { Object.assign(world, o); if (!Art.ENVS[world.env]) world.env = 'city'; if (!Art.THEMES[world.theme]) world.theme = 'retro'; store.set({ world: { env: world.env, theme: world.theme } }); buildScene(sceneName); bubs.forEach(b => b.el.remove()); bubs.clear(); Tapri.parts.leaves.length = 0; Tapri.parts.moths.length = 0; sparrows.length = 0; Tapri.resetCrowd(); owner.start(); dog.reset(); renderWorldUI(); changed('world'); }
+const WORLD_ICON = { city: 'building', coast: 'waves', desert: 'tent', hill: 'mountain', railway: 'train', rural: 'sprout', urban: 'building2', village: 'home', retro: 'radio', comic: 'comic' };
 function renderWorldUI() {
   const tb = $('themes'), eb = $('envs'); tb.innerHTML = ''; eb.innerHTML = '';
-  for (const id in Art.THEMES) { const t = Art.THEMES[id], b = document.createElement('button'); b.innerHTML = '<i>' + t.icon + '</i><span>' + t.label + '</span>'; b.className = id === world.theme ? 'on' : ''; b.onclick = () => { TA.resume(); setWorld({ theme: id }); }; tb.appendChild(b); }
-  for (const id in Art.ENVS) { const e = Art.ENVS[id], b = document.createElement('button'); b.innerHTML = '<i>' + e.icon + '</i><span>' + e.label + '</span>'; b.className = id === world.env ? 'on' : ''; b.onclick = () => { TA.resume(); setWorld({ env: id }); }; eb.appendChild(b); }
+  for (const id in Art.THEMES) { const t = Art.THEMES[id], b = document.createElement('button'); b.innerHTML = '<i>' + (WORLD_ICON[id] ? ico(WORLD_ICON[id]) : t.icon) + '</i><span>' + t.label + '</span>'; b.className = id === world.theme ? 'on' : ''; b.onclick = () => { TA.resume(); setWorld({ theme: id }); }; tb.appendChild(b); }
+  for (const id in Art.ENVS) { const e = Art.ENVS[id], b = document.createElement('button'); b.innerHTML = '<i>' + (WORLD_ICON[id] ? ico(WORLD_ICON[id]) : e.icon) + '</i><span>' + e.label + '</span>'; b.className = id === world.env ? 'on' : ''; b.onclick = () => { TA.resume(); setWorld({ env: id }); }; eb.appendChild(b); }
 }
 function toggleWorld(f) { const w = $('world'), o = f !== undefined ? f : !w.classList.contains('open'); w.classList.toggle('open', o); $('btnWorld').classList.toggle('on', o); if (o) togglePanel(false); }
 $('btnWorld').onclick = () => { TA.resume(); toggleWorld(); }; $('closeWorld').onclick = () => toggleWorld(false);
@@ -268,6 +269,7 @@ $('enter').onclick = async () => {
   const cfgPl = parsePlaylist(window.TAPRI_CONFIG && window.TAPRI_CONFIG.PLAYLIST) || saved.playlist || ''; const startSt = saved.station ? ST.findIndex(s => s.id === saved.station) : (cfgPl ? 0 : 1);
   setRadio(true); tune(startSt >= 0 ? startSt : 1); if (cfgPl) setPlaylist(cfgPl, false); if (window.innerWidth > 900) togglePanel(true);
   if (Tapri.hooks.entered) Tapri.hooks.entered();
+  setTimeout(() => ['lofi', 'retro', 'baarish'].forEach(n => fetch('audio/music/' + n + '.mp3').catch(() => {})), 4000);   // warm the cache so a station switch is instant
 };
 setMuteUI();
 // dev: index.html#shot=night&t=20&act=fry  (auto-enters, fast-forwards, optionally forces an owner action)

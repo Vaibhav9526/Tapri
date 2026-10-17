@@ -53,7 +53,7 @@ function handle(m) {
   switch (m.t) {
     case 'error': leaveToIntro(m.msg); break;
     case 'welcome': onWelcome(m); break;
-    case 'peer-join': addPlayer(m.peer); ensurePC(m.peer.id); toast(m.peer.name + ' aa gaya ☕'); countUI(); break;
+    case 'peer-join': addPlayer(m.peer); ensurePC(m.peer.id); toast(m.peer.name + ' aa gaya'); countUI(); break;
     case 'peer-update': { const p = players.get(m.peer.id); if (p) { p.name = m.peer.name; p.tag.textContent = p.name; if (m.peer.style && m.peer.style.outfit) { const st = clean(m.peer.style); p.style = st; p.person.style = st; p.person.female = !!st.female; } } break; }
     case 'peer-leave': { const p = players.get(m.id); if (p) toast(p.name + ' chala gaya'); removePlayer(m.id); countUI(); break; }
     case 'radio': Tapri.radioCtl.apply({ ...m.state, lag: Math.max(0, (m.now - m.state.at) / 1000) }); break;
@@ -75,7 +75,7 @@ function onWelcome(m) {
   if (first) { toast(m.peers.length ? 'Room ' + code + ' — ' + (m.peers.length + 1) + ' log baithe hain' : 'Room ' + code + ' ready — share the code!'); if (pending.mic) startVoice(); }
   else if (V.started) for (const id of pcs.keys()) addTracks(id);
 }
-const countUI = () => { $('rbCount').textContent = '👥 ' + players.size; V.refreshPeers(); };
+const countUI = () => { $('rbCount').innerHTML = ico('users') + '<span>' + players.size + '</span>'; V.refreshPeers(); };
 const peerList = () => [...players.values()].filter(p => !p.mine).map(p => ({ id: p.id, name: p.name }));
 
 /* ---------- players = seated customers who only move their mouth when they really talk ---------- */
@@ -111,8 +111,8 @@ AV.onChange(style => { if (!joined || !me) return; const p = players.get(me.id);
 Tapri.hooks.frame = () => {
   if (!players.size) return; const S = Tapri.view.scale(), now = performance.now();
   for (const p of players.values()) {
-    const x = p.person.x * S, y = (p.person.gy + 3) * S, w = p.tag.offsetWidth, h = p.tag.offsetHeight;
-    p.tag.style.transform = `translate(${(x - w / 2).toFixed(1)}px,${(y - h / 2 + 4 * S).toFixed(1)}px)`;
+    const a = p.person.anchor(), x = a.x * S, y = a.y * S, w = p.tag.offsetWidth, h = p.tag.offsetHeight;
+    p.tag.style.transform = `translate(${(x - w / 2).toFixed(1)}px,${(y - h - 3).toFixed(1)}px)`;
     const talking = p.mine ? V.speaking : V.peerTalking(p.id);
     p.tag.classList.toggle('talk', talking); p.tag.classList.toggle('nomic', p.mine && V.started && (!V.mic || V.deafened));
     if (talking) p.person.talkUntil = Tapri.T + 0.2; else if (p.person.talkUntil > Tapri.T + 0.2) p.person.talkUntil = 0;
@@ -173,8 +173,8 @@ V.on(() => {}, paintBar, peerList);
 function paintBar() {
   const mic = $('rbMic'), on = V.started && V.mic && !V.deafened;
   mic.classList.toggle('on', on); mic.classList.toggle('muted', V.started && !on);
-  mic.textContent = !V.started ? '🎙 Join voice' : on ? '🎙' : '🔇'; mic.title = !V.started ? 'Join voice chat' : on ? 'Mute your mic' + (V.ptt ? ' (push to talk: ' + V.ptt + ')' : '') : 'Unmute your mic';
-  const d = $('rbDeaf'); d.classList.toggle('muted', V.deafened); d.textContent = V.deafened ? '🔈' : '🎧'; d.title = V.deafened ? 'Undeafen' : 'Deafen (stop hearing everyone)'; d.hidden = !V.started;
+  mic.innerHTML = !V.started ? ico('mic') + '<span>Join voice</span>' : on ? ico('mic') : ico('mic-off'); mic.title = !V.started ? 'Join voice chat' : on ? 'Mute your mic' + (V.ptt ? ' (push to talk: ' + V.ptt + ')' : '') : 'Unmute your mic';
+  const d = $('rbDeaf'); d.classList.toggle('muted', V.deafened); d.innerHTML = ico(V.deafened ? 'headphones-off' : 'headphones'); d.title = V.deafened ? 'Undeafen' : 'Deafen (stop hearing everyone)'; d.hidden = !V.started;
   $('rbFocus').classList.toggle('on', Tapri.focus);
 }
 $('rbMic').onclick = async () => { TA.resume(); if (!V.started) { await startVoice(); return; } V.setMic(!V.mic); };

@@ -6,7 +6,7 @@
    - music: station tracks through a small radio filter (YouTube plays separately). */
 const TA = (() => {
   let envMix = { traffic: 1, birds: 1, crickets: 1, crowd: 1, rain: 1 }, outAn, ctx, master, comp, wet, buses = {}, loopNodes = {}, bank = {}, voiceMap = {}, bufCache = {}, started = false, muted = false, scene = 'day';
-  let musicSrc = null, station = 'off', radioOn = true, ytPlaying = false, analyser, anaData, beatSm = 0, hissG, toneLP, musicIn;
+  let tuneTok = 0, inflight = {}, musicSrc = null, station = 'off', radioOn = true, ytPlaying = false, analyser, anaData, beatSm = 0, hissG, toneLP, musicIn;
   const state = { master: 0.9, music: 0.45, crowd: 0.7, traffic: 0.5, rain: 0, nature: 0.5, chai: 0.55, voices: 0.75, crackle: 0.2, events: 0.4 };
   const BASE = { crowd: 2.2, traffic: 2.0, rain: 2.0, nature: 2.4, chai: 3.2, voices: 2.4, music: 3.0, events: 2.0 };
   const SCENE_MIX = { // how much of each bed a time of day wants
@@ -21,8 +21,13 @@ const TA = (() => {
 
   async function load(url) {
     if (url in bufCache) return bufCache[url];
-    try { const r = await fetch(url); if (!r.ok) throw 0; bufCache[url] = await ctx.decodeAudioData(await r.arrayBuffer()); } catch (e) { bufCache[url] = null; console.log('LOADFAIL ' + url + ' ' + (e && (e.message || e.name) || e)); }
-    return bufCache[url];
+    if (inflight[url]) return inflight[url];          // two requests for the same file share one download + decode
+    return inflight[url] = (async () => {
+      try { const r = await fetch(url); if (!r.ok) { if (r.status === 404) bufCache[url] = null; throw new Error('HTTP ' + r.status); } bufCache[url] = await ctx.decodeAudioData(await r.arrayBuffer()); }
+      catch (e) { console.log('LOADFAIL ' + url + ' ' + (e && (e.message || e.name) || e)); }   // a network hiccup is not cached, so the next tune retries
+      finally { delete inflight[url]; }
+      return bufCache[url] || null;
+    })();
   }
   function noise(secs = 3) { const b = ctx.createBuffer(1, ctx.sampleRate * secs, ctx.sampleRate), d = b.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; return b; }
   function impulse(secs = 1.1, decay = 3.2) { const n = ctx.sampleRate * secs, b = ctx.createBuffer(2, n, ctx.sampleRate); for (let c = 0; c < 2; c++) { const d = b.getChannelData(c); for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, decay); } return b; }
@@ -106,9 +111,9 @@ const TA = (() => {
     stopMusic() { if (musicSrc) { try { musicSrc.stop(ctx.currentTime + 0.2); } catch (e) {} musicSrc = null; } },
     staticBurst(d = 0.5) { if (!started || muted) return; const g = hissG.gain, t = ctx.currentTime; g.cancelScheduledValues(t); g.setValueAtTime(0.0001, t); g.linearRampToValueAtTime(0.14, t + 0.05); g.exponentialRampToValueAtTime(0.0001, t + d); },
     async tune(id) {
-      if (!started) return; station = id; api.stopMusic(); api.staticBurst(0.6);
+      if (!started) return; station = id; const tok = ++tuneTok; api.stopMusic(); api.staticBurst(0.6);
       if (id === 'off' || id === 'yt') { api.applyMusicVol(); return; }
-      const b = await load(STATIONS[id].file); if (station !== id || !b) return;
+      const b = await load(STATIONS[id].file); if (tok !== tuneTok || station !== id || !b) return;
       const s = ctx.createBufferSource(); s.buffer = b; s.loop = true; s.connect(musicIn); s.start(ctx.currentTime + 0.35, rnd(0, 20)); musicSrc = s; api.applyMusicVol();
     },
     ytPlaying(b) { ytPlaying = b; }, isPlaying() { return radioOn && !muted && ((station === 'yt' && ytPlaying) || (!!musicSrc && station !== 'off')); },
