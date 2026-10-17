@@ -108,29 +108,97 @@
 </aside>
 
 <div id="intro">
-  <div class="card">
+  <div class="hero">
     <div class="steam"></div>
     <h1>Tapri Radio</h1>
     <p class="hi">बैठो भाई, चाय आ रही है</p>
-    <p class="sub">A living chai tapri with a radio. Eight places, four times of day, your own YouTube playlist — and the whole neighbourhood chatting around you.</p>
-    <ul class="feat"><li>🎧 Best with headphones</li><li>📻 Radio + your playlist</li><li>🗣️ Hindi chit-chat &amp; stories</li><li>⛈️ Rain, thunder &amp; traffic</li></ul>
-    <button id="enter">Baith jaao</button>
-    <div class="room" id="roomForm">
-      <p class="or"><span>or sit with friends</span></p>
-      <input id="rmName" maxlength="16" placeholder="Your name" autocomplete="nickname" aria-label="Your name">
-      <div class="rm-row"><input id="rmCode" maxlength="8" placeholder="ROOM CODE" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-label="Room code"><button id="rmJoin">Join</button></div>
-      <button id="rmNew" class="ghost">Create a new room</button>
-      <label class="rm-mic"><input type="checkbox" id="rmMic" checked> Talk with my mic</label>
+    <p class="sub">A living chai tapri with a radio. Sit with friends, share the music and talk over a cup of chai.</p>
+
+    <div class="join-card">
+      <div class="who">
+        <button type="button" class="av-frame" id="avPrev-wrap" aria-label="Change your character"><canvas id="avPrev" width="148" height="224" aria-hidden="true"></canvas></button>
+        <div class="who-r">
+          <label for="rmName">Your name</label>
+          <input id="rmName" maxlength="16" placeholder="e.g. Asha" autocomplete="nickname">
+          <div class="who-btns"><button type="button" id="avEdit" class="soft">✏️ Customize</button><button type="button" id="avShuffle" class="soft" title="Random character" aria-label="Random character">🎲</button></div>
+        </div>
+      </div>
+
+      <div class="seg" role="tablist"><button type="button" id="tabCreate" class="on" role="tab">Create a room</button><button type="button" id="tabJoin" role="tab">Join with code</button></div>
+      <div class="pane" id="paneCreate">
+        <p>Get a 4-letter code and share it. Up to 6 friends sit at your stall, hear the same radio and talk together.</p>
+        <button type="button" id="rmNew" class="cta">☕ Create room</button>
+      </div>
+      <div class="pane" id="paneJoin" hidden>
+        <input id="rmCode" maxlength="8" placeholder="CODE" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-label="Room code">
+        <button type="button" id="rmJoin" class="cta">Join room</button>
+      </div>
+      <label class="rm-mic"><input type="checkbox" id="rmMic" checked> Join with my microphone</label>
       <p id="rmErr" class="err" role="alert"></p>
     </div>
+
+    <button id="enter" class="solo">or just sit alone — Baith jaao</button>
     <p class="keys"><kbd>M</kbd> mute · <kbd>R</kbd> radio · <kbd>W</kbd> place · <kbd>1</kbd>–<kbd>4</kbd> time of day</p>
   </div>
 </div>
+
+<div class="modal" id="avatarEd" hidden role="dialog" aria-modal="true" aria-label="Customize your character">
+  <div class="sheet">
+    <header><h3>Your character</h3><button type="button" id="avClose" class="x" aria-label="Close">✕</button></header>
+    <div class="ed">
+      <div class="ed-prev"><canvas id="avBig" width="200" height="300"></canvas>
+        <input id="avName" maxlength="16" placeholder="Your name" aria-label="Your name">
+        <button type="button" id="avShuffle2" class="soft">🎲 Surprise me</button></div>
+      <div class="ed-body" id="avBody"></div>
+    </div>
+    <footer><button type="button" id="avDone" class="cta">Done</button></footer>
+  </div>
+</div>
+
+<div class="modal" id="voiceSet" hidden role="dialog" aria-modal="true" aria-label="Voice settings">
+  <div class="sheet vs">
+    <header><h3>Voice settings</h3><button type="button" id="vsClose" class="x" aria-label="Close">✕</button></header>
+    <div class="vs-body">
+      <div id="vsStartBox"><p class="vs-empty">Your microphone isn't on yet.</p><button type="button" id="vsStart" class="soft">🎙 Turn on microphone</button></div>
+      <p id="vsMsg" class="err" role="alert"></p>
+      <h4>Input</h4>
+      <label class="f">Microphone<select id="vsIn"></select></label>
+      <label class="f">Input volume <em id="vsInVolN"></em><input type="range" id="vsInVol" min="0" max="2" step="0.01"></label>
+      <div class="f">Input mode
+        <div class="chips"><button type="button" class="chip" data-mode="vad">Voice activity</button><button type="button" class="chip" data-mode="ptt">Push to talk</button></div>
+      </div>
+      <div id="vsVadBox" class="f">Input sensitivity <small>— sound above the line is sent</small>
+        <div class="meter"><i id="vsLevel"></i><b id="vsMark"></b></div>
+        <input type="range" id="vsSens" min="0" max="1" step="0.005" aria-label="Input sensitivity">
+      </div>
+      <div id="vsPttBox" class="f" hidden>Shortcut <button type="button" id="vsKey" class="key"></button>
+        <div class="meter"><i id="vsLevel2"></i></div><small>Hold the key to talk.</small></div>
+      <div class="f" id="vsLive"><label class="chk"><input type="checkbox" id="vsMonitor"> Hear myself <small>(use headphones)</small></label></div>
+      <h4>Voice processing</h4>
+      <label class="chk"><input type="checkbox" id="vsEcho"> Echo cancellation</label>
+      <label class="chk"><input type="checkbox" id="vsNoise"> Noise suppression</label>
+      <label class="chk"><input type="checkbox" id="vsAgc"> Automatic gain control</label>
+      <h4>Output</h4>
+      <label class="f">Speakers<select id="vsOut"></select></label>
+      <label class="f">Everyone's volume <em id="vsOutVolN"></em><input type="range" id="vsOutVol" min="0" max="1" step="0.01"></label>
+      <h4>People</h4>
+      <div id="vsPeers"></div>
+    </div>
+    <footer><button type="button" id="vsDone" class="cta">Done</button></footer>
+  </div>
+</div>
+
 <div id="roomBar" hidden>
-  <button id="rbCode" title="Copy invite link"><span class="cup">☕</span><b id="rbCodeTxt">----</b></button>
+  <button type="button" id="rbCode" title="Copy invite link"><span class="cup">☕</span><b id="rbCodeTxt">----</b></button>
   <span id="rbCount" title="People in this room">👥 1</span>
-  <button id="rbMic" title="Join voice chat">🎙 Join voice</button>
-  <button id="rbLeave" title="Leave room" aria-label="Leave room">✕</button>
+  <i class="sep"></i>
+  <button type="button" id="rbMic" title="Join voice chat">🎙 Join voice</button>
+  <button type="button" id="rbDeaf" title="Deafen" hidden>🎧</button>
+  <i class="sep"></i>
+  <button type="button" id="rbFocus" title="Focus bench: show only the people in this room">🎯</button>
+  <button type="button" id="rbLook" title="Customize your character">🙂</button>
+  <button type="button" id="rbSet" title="Voice settings">⚙️</button>
+  <button type="button" id="rbLeave" title="Leave room" aria-label="Leave room">✕</button>
 </div>
 <div id="flash" aria-hidden="true"></div>
 <div id="toast" role="status" aria-live="polite"></div>
@@ -148,6 +216,8 @@
 <script src="js/stage.js"></script>
 <script src="js/worlds.js"></script>
 <script src="js/main.js"></script>
+<script src="js/avatar.js"></script>
+<script src="js/voice.js"></script>
 <script src="js/multi.js"></script>
 </body>
 </html>

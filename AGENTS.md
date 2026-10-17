@@ -27,3 +27,5 @@ A chai-stall simulation drawn in code on a 480x320 pixel canvas, with a radio (o
 - Client side lives in `site/js/multi.js` (room form on the intro card, room bar, players as seated `Tapri.Person`s, WebRTC voice). It talks to `main.js` only through `Tapri.hooks.changed/frame/entered`, `Tapri.radioCtl`, `Tapri.worldCtl`, `Tapri.view`.
 - Deployed on Render as a Node web service (`render.yaml`); optional env `TURN_URL`, `TURN_USER`, `TURN_PASS` for a TURN relay.
 - Test with the server running: `node tests/multi-room.mjs [baseUrl]`.
+- More client files: `site/js/avatar.js` (character model -> rig style, preview, editor dialog; saved in localStorage), `site/js/voice.js` (mic pipeline with input volume / voice-activity gate / push-to-talk, output device and volumes, deafen, the voice settings dialog). Players never speak by themselves: `Tapri.say` is a no-op for them and their mouth moves only while their real voice level is up.
+- Focus bench (`Tapri.focus`, room bar 🎯): hides every NPC customer and zooms on the room's players via `Tapri.view.focus(x, width)`. The server seats the first players on the middle bench (next to the radio and counter).

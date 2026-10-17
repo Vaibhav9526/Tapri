@@ -68,10 +68,10 @@ function render() {
 }
 /* ====================== camera (cover the screen, pan on tall phones) ====================== */
 const stage = $('stage'), viewport = $('viewport'); let vw = 0, vh = 0, S = 1, camX = 0, camY = 0, camTarget = 240, manualUntil = 0, drag = null;
-let availW = 0, availH = 0, zoomClose = false;
-function layout() { vw = window.innerWidth; vh = window.innerHeight; const open = panel.classList.contains('open'), mob = vw <= 760; availW = open && !mob ? vw - 372 : vw; availH = open && mob ? Math.max(vh * 0.4, vh - panel.offsetHeight - 84) : vh; const portrait = vw < 760 || vh > vw * 1.15; S = portrait && zoomClose ? Math.min(Math.max(availW / 200, availH * 0.6 / LH), availH / LH) : Math.min(availW / LW, availH / LH); stage.style.width = LW * S + 'px'; stage.style.height = LH * S + 'px'; document.documentElement.style.setProperty('--u', S + 'px'); camY = Math.max(0, (availH - LH * S) / 2); if (open && mob) camY = Math.max(camY, 58); applyCam(true); }
-function applyCam(snap) { const minX = Math.min(0, availW - LW * S); const want = LW * S <= availW + 2 ? (availW - LW * S) / 2 : clamp(availW / 2 - camTarget * S, minX, 0); camX = snap ? want : lerp(camX, want, 0.045); stage.style.transform = `translate3d(${camX.toFixed(1)}px,${camY.toFixed(1)}px,0)`; }
-function camFollow() { const T = Tapri.T; if (LW * S <= availW + 4 || T < manualUntil) return; let t = owner.x; for (const [e, b] of bubs) { if (b.kind !== 'note' && e !== owner && e.x !== undefined) { t = e.x; break; } } if (helper.carrying) t = helper.x; camTarget = lerp(camTarget, clamp(t, 150, 330), 0.04); }
+let availW = 0, availH = 0, zoomClose = false, focusOn = false, focusW = 250, focusY = 245;
+function layout() { vw = window.innerWidth; vh = window.innerHeight; const open = panel.classList.contains('open'), mob = vw <= 760; availW = open && !mob ? vw - 372 : vw; availH = open && mob ? Math.max(vh * 0.4, vh - panel.offsetHeight - 84) : vh; const portrait = vw < 760 || vh > vw * 1.15; S = focusOn ? Math.min(availW / focusW, availH * 1.3 / LH) : portrait && zoomClose ? Math.min(Math.max(availW / 200, availH * 0.6 / LH), availH / LH) : Math.min(availW / LW, availH / LH); stage.style.width = LW * S + 'px'; stage.style.height = LH * S + 'px'; document.documentElement.style.setProperty('--u', S + 'px'); camY = focusOn ? clamp(availH * 0.6 - focusY * S, Math.min(0, availH - LH * S), 0) : Math.max(0, (availH - LH * S) / 2); if (open && mob) camY = Math.max(camY, 58); applyCam(true); }
+function applyCam(snap) { const minX = Math.min(0, availW - LW * S); const want = LW * S <= availW + 2 && !focusOn ? (availW - LW * S) / 2 : clamp(availW / 2 - camTarget * S, minX, 0); camX = snap ? want : lerp(camX, want, 0.045); stage.style.transform = `translate3d(${camX.toFixed(1)}px,${camY.toFixed(1)}px,0)`; }
+function camFollow() { const T = Tapri.T; if ((LW * S <= availW + 4 && !focusOn) || T < manualUntil) return; let t = owner.x; for (const [e, b] of bubs) { if (b.kind !== 'note' && e !== owner && e.x !== undefined) { t = e.x; break; } } if (helper.carrying) t = helper.x; camTarget = lerp(camTarget, clamp(t, 150, 330), 0.04); }
 window.addEventListener('resize', () => { layout(); if (Art.T) ambient(); });
 function toggleZoom() { zoomClose = !zoomClose; $('btnZoom').classList.toggle('on', zoomClose); camTarget = clamp(owner.x, 120, 360); manualUntil = 0; layout(); }
 $('btnZoom').onclick = () => { TA.resume(); toggleZoom(); }; let lastTap = 0;
@@ -243,7 +243,9 @@ Tapri.worldCtl = {
   get() { return { env: world.env, theme: world.theme, scene: sceneName }; },
   apply(w) { applying = true; try { if (w.env !== world.env || w.theme !== world.theme) setWorld({ env: w.env, theme: w.theme }); if (w.scene && w.scene !== sceneName) setScene(w.scene); } finally { applying = false; } }
 };
-Tapri.view = { layer: bubEl, scale: () => S };
+Tapri.view = { layer: bubEl, scale: () => S,
+  // focus bench: zoom in on x (scene px) showing about w px of the stall; focus(null) goes back to the whole stall
+  focus(x, w) { const was = focusOn; focusOn = x != null; if (focusOn) { focusW = clamp(w || 250, 180, LW); camTarget = clamp(x, focusW / 2, LW - focusW / 2); manualUntil = Tapri.T + 1e9; } else if (was) manualUntil = 0; if (focusOn || was) layout(); } };
 
 /* ====================== boot ====================== */
 const saved = store.get();

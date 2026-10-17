@@ -260,7 +260,8 @@ let nextArrive = 3;
 function freeSeats() { return L.seats.filter(s => !s.p && !L.seats.some(o => o.p && o.p.state !== 'leave' && false)); }
 Tapri.updateCrowd = function (dt) {
   const T = Tapri.T;
-  if (T > nextArrive) {
+  if (Tapri.focus) for (const p of people) if (!p.player && !p.dead) { p.dead = true; if (p.kind === 'sitter') seatItems[p.idx] = { glass: null, plate: null }; Tapri.convoAbort(p); }   // focus bench: only the room's players are shown
+  if (T > nextArrive && !Tapri.focus) {
     nextArrive = T + rnd(12, 24); const active = people.filter(p => p.state !== 'leave' && !p.dead && !p.player).length;
     if (active < 5) {
       const buyerSlots = L.buy.filter(b => !b.p), seatSlots = L.seats.filter(s => !s.p);

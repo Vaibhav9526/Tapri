@@ -6,7 +6,7 @@ import { WebSocketServer } from 'ws';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'site');
 const port = process.env.PORT || 8080;
-const SEATS = 6, EMPTY_TTL = 10 * 60 * 1000;
+const SEATS = 6, SEAT_ORDER = [2, 3, 0, 1, 4, 5], EMPTY_TTL = 10 * 60 * 1000;
 const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.jpeg': 'image/jpeg', '.jpg': 'image/jpeg', '.png': 'image/png', '.mp3': 'audio/mpeg', '.json': 'application/json', '.svg': 'image/svg+xml', '.woff2': 'font/woff2' };
 
 const server = http.createServer((q, s) => {
@@ -51,7 +51,7 @@ wss.on('connection', ws => {
       let code = normCode(m.code), r = rooms.get(code);
       if (m.create || (!r && m.rejoin && code.length >= 3)) { if (!r) { code = m.create ? newCode() : code; r = { code, clients: new Map(), radio: null, world: null, emptySince: 0 }; rooms.set(code, r); } }
       if (!r) return send(ws, { t: 'error', msg: 'No room with that code. Check it, or create a new one.' });
-      const taken = new Set([...r.clients.values()].map(c => c.seat)); let seat = -1; for (let i = 0; i < SEATS; i++) if (!taken.has(i)) { seat = i; break; }
+      const taken = new Set([...r.clients.values()].map(c => c.seat)); let seat = -1; for (const i of SEAT_ORDER) if (!taken.has(i)) { seat = i; break; }
       if (seat < 0) return send(ws, { t: 'error', msg: 'This tapri is full (6 seats). Try again in a bit.' });
       me = { id: nextId++, ws, name: cleanName(m.name), style: m.style && typeof m.style === 'object' ? m.style : {}, seat }; room = r; r.emptySince = 0;
       send(ws, { t: 'welcome', id: me.id, code: r.code, seat, peers: [...r.clients.values()].map(pub), radio: r.radio, world: r.world, now: Date.now(), ice: ice() });
@@ -59,6 +59,7 @@ wss.on('connection', ws => {
     } else if (!me) return;
     else if (m.t === 'radio' && m.state) { room.radio = { ...m.state, at: Date.now() }; bcast(room, { t: 'radio', state: room.radio, now: Date.now(), from: me.id }, me); }
     else if (m.t === 'radio-sync' && m.state) room.radio = { ...m.state, at: Date.now() };
+    else if (m.t === 'profile') { if (m.name) me.name = cleanName(m.name); if (m.style && typeof m.style === 'object') me.style = m.style; bcast(room, { t: 'peer-update', peer: pub(me) }, me); }
     else if (m.t === 'world' && m.world) { room.world = m.world; bcast(room, { t: 'world', world: m.world, from: me.id }, me); }
     else if (m.t === 'signal') { const to = room.clients.get(m.to); if (to) send(to.ws, { t: 'signal', from: me.id, data: m.data }); }
     else if (m.t === 'ping') send(ws, { t: 'pong' });
