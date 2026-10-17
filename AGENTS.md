@@ -21,3 +21,9 @@ A chai-stall simulation drawn in code on a 480x320 pixel canvas, with a radio (o
 
 ## Tests
 - `npm i --no-save puppeteer-core`, then with the server running: `node tests/world-matrix.mjs` (every env x theme x time of day), `node tests/world-behavior.mjs` (rig, IK hand anchors, pour/tray/delivery, sit/stand, radio/YouTube), `node tests/world-art-checks.mjs` (deterministic layers, opaque floors, timings). Screenshots go to `%TEMP%/tapri-art-verification/`.
+
+## Shared rooms (multiplayer)
+- `node server/index.mjs` (or `npm start`) serves `site/` and runs the rooms over a WebSocket at `/ws`; `tools/serve.mjs` is still fine for solo work.
+- Client side lives in `site/js/multi.js` (room form on the intro card, room bar, players as seated `Tapri.Person`s, WebRTC voice). It talks to `main.js` only through `Tapri.hooks.changed/frame/entered`, `Tapri.radioCtl`, `Tapri.worldCtl`, `Tapri.view`.
+- Deployed on Render as a Node web service (`render.yaml`); optional env `TURN_URL`, `TURN_USER`, `TURN_PASS` for a TURN relay.
+- Test with the server running: `node tests/multi-room.mjs [baseUrl]`.

@@ -125,7 +125,7 @@ function placeBubbles() {
 /* ====================== worlds: theme (look) x environment (place) ====================== */
 const world = { env: 'village', theme: 'retro' };
 function applyWorldHooks() { const th = Art.THEMES[world.theme] || Art.THEMES.retro, env = Art.ENVS[world.env] || Art.ENVS.city; for (const k of Object.keys(Sprites.hooks)) delete Sprites.hooks[k]; Object.assign(Sprites.hooks, th.actors || {}); Sprites.envPeople = env.people || null; TA.setEnvMix(env.mix); }
-function setWorld(o) { Object.assign(world, o); if (!Art.ENVS[world.env]) world.env = 'city'; if (!Art.THEMES[world.theme]) world.theme = 'retro'; store.set({ world: { env: world.env, theme: world.theme } }); buildScene(sceneName); bubs.forEach(b => b.el.remove()); bubs.clear(); Tapri.parts.leaves.length = 0; Tapri.parts.moths.length = 0; sparrows.length = 0; Tapri.resetCrowd(); owner.start(); dog.reset(); renderWorldUI(); }
+function setWorld(o) { Object.assign(world, o); if (!Art.ENVS[world.env]) world.env = 'city'; if (!Art.THEMES[world.theme]) world.theme = 'retro'; store.set({ world: { env: world.env, theme: world.theme } }); buildScene(sceneName); bubs.forEach(b => b.el.remove()); bubs.clear(); Tapri.parts.leaves.length = 0; Tapri.parts.moths.length = 0; sparrows.length = 0; Tapri.resetCrowd(); owner.start(); dog.reset(); renderWorldUI(); changed('world'); }
 function renderWorldUI() {
   const tb = $('themes'), eb = $('envs'); tb.innerHTML = ''; eb.innerHTML = '';
   for (const id in Art.THEMES) { const t = Art.THEMES[id], b = document.createElement('button'); b.innerHTML = '<i>' + t.icon + '</i><span>' + t.label + '</span>'; b.className = id === world.theme ? 'on' : ''; b.onclick = () => { TA.resume(); setWorld({ theme: id }); }; tb.appendChild(b); }
@@ -146,6 +146,7 @@ function setScene(name) {
   if (layers && name === sceneName) return;
   buildScene(name); TA.setScene(name); Tapri.parts.leaves.length = 0; Tapri.parts.moths.length = 0; sparrows.length = 0; bubs.forEach(b => b.el.remove()); bubs.clear();
   if (started) { Tapri.resetCrowd(); owner.start(); dog.reset(); }
+  changed('world');
   if (!rainTouched && TA.state.rain !== (name === 'night' ? 0.3 : 0)) { TA.set('rain', name === 'night' ? 0.3 : 0); syncSliders(); }
 }
 
@@ -162,7 +163,7 @@ window.addEventListener('keydown', e => { if (e.key === 'm' || e.key === 'M') { 
 
 const ST = [{ id: 'yt', f: '91.1', n: 'Hamari Playlist' }, { id: 'lofi', f: '98.3', n: 'Lo-fi Chai' }, { id: 'retro', f: '102.5', n: 'Purane Gaane' }, { id: 'baarish', f: '104.7', n: 'Baarish FM' }, { id: 'off', f: '88.0', n: 'Sirf Tapri (no music)' }];
 let stIdx = 1; const stBox = $('stations'); ST.forEach((s, i) => { const b = document.createElement('button'); b.textContent = s.f; b.title = s.n; b.onclick = () => tune(i); stBox.appendChild(b); });
-function tune(i) { stIdx = (i + ST.length) % ST.length; const s = ST[stIdx]; TA.resume(); [...stBox.children].forEach((b, k) => b.classList.toggle('on', k === stIdx)); $('freq').textContent = s.f; $('sname').textContent = s.n; $('needle').style.left = (6 + stIdx / (ST.length - 1) * 88) + '%'; TA.dialPos = stIdx / (ST.length - 1); $('ytBox').classList.toggle('hidden', s.id !== 'yt'); store.set({ station: s.id }); TA.tune(radioOn ? s.id : 'off'); ytSync(); }
+function tune(i) { stIdx = (i + ST.length) % ST.length; const s = ST[stIdx]; TA.resume(); [...stBox.children].forEach((b, k) => b.classList.toggle('on', k === stIdx)); $('freq').textContent = s.f; $('sname').textContent = s.n; $('needle').style.left = (6 + stIdx / (ST.length - 1) * 88) + '%'; TA.dialPos = stIdx / (ST.length - 1); $('ytBox').classList.toggle('hidden', s.id !== 'yt'); store.set({ station: s.id }); TA.tune(radioOn ? s.id : 'off'); ytSync(); changed('radio'); }
 $('prevSt').onclick = () => tune(stIdx - 1); $('nextSt').onclick = () => tune(stIdx + 1);
 Tapri.hooks.radioKnob = () => tune(stIdx + 1);
 function setRadio(on) { radioOn = on; $('led').classList.toggle('on', on); TA.setRadio(on); if (on) TA.tune(ST[stIdx].id); ytSync(); }
@@ -204,15 +205,45 @@ function ytVol() { if (yt && ytReady) yt.setVolume(Math.round(Math.pow(TA.state.
 function loadYTApi() { if (window.YT || document.getElementById('ytapi')) return; const s = document.createElement('script'); s.id = 'ytapi'; s.src = 'https://www.youtube.com/iframe_api'; document.head.appendChild(s); }
 window.onYouTubeIframeAPIReady = () => { ytApiReady = true; if (ytId) makeYT(); };
 function makeYT() { if (!ytApiReady || !ytId || yt) return; yt = new YT.Player('ytPlayer', { width: '100%', height: '100%', playerVars: { listType: 'playlist', list: ytId, playsinline: 1, rel: 0, modestbranding: 1 }, events: {
-  onReady: () => { ytReady = true; ytVol(); if (store.get().shuffle) yt.setShuffle(true); if (TA.muted) yt.mute(); ytSync(); },
+  onReady: () => { ytReady = true; if (pendingYT) { const q = pendingYT; pendingYT = null; applyYT(q); } ytVol(); if (store.get().shuffle) yt.setShuffle(true); if (TA.muted) yt.mute(); ytSync(); },
   onStateChange: e => { const pl = e.data === 1; TA.ytPlaying(pl && ST[stIdx].id === 'yt'); if (e.data === 1 || e.data === 5) { try { const t = yt.getVideoData().title; if (t) { $('np').textContent = '▶ ' + t; if (ST[stIdx].id === 'yt') $('sname').textContent = t; } } catch (er) {} } if (e.data === 1 && ST[stIdx].id !== 'yt') yt.pauseVideo(); },
   onError: () => { $('np').textContent = 'Could not play this (private playlist or embedding disabled?)'; } } }); }
 function ytSync() { if (!ytReady) { if (ST[stIdx].id === 'yt' && !ytId) $('np').textContent = 'Paste a YouTube playlist link above ↑'; return; } const w = radioOn && ST[stIdx].id === 'yt'; try { w ? yt.playVideo() : yt.pauseVideo(); } catch (e) {} ytVol(); }
 function setPlaylist(s, save) { const id = parsePlaylist(s); if (!id) { $('np').textContent = 'That doesn’t look like a playlist link.'; return; } ytId = id; if (save) store.set({ playlist: id }); $('ytUrl').value = id; $('np').textContent = 'Loading…';
-  if (yt && ytReady) { yt.loadPlaylist({ list: id, listType: 'playlist', index: 0 }); ytVol(); if (store.get().shuffle) yt.setShuffle(true); if (ST[stIdx].id !== 'yt') yt.pauseVideo(); } else { loadYTApi(); makeYT(); } if (ST[stIdx].id !== 'yt') tune(0); }
+  if (yt && ytReady) { yt.loadPlaylist({ list: id, listType: 'playlist', index: 0 }); ytVol(); if (store.get().shuffle) yt.setShuffle(true); if (ST[stIdx].id !== 'yt') yt.pauseVideo(); } else { loadYTApi(); makeYT(); } if (ST[stIdx].id !== 'yt') tune(0); changed('radio'); }
 $('ytLoad').onclick = () => { TA.resume(); setPlaylist($('ytUrl').value, true); }; $('ytUrl').addEventListener('keydown', e => { if (e.key === 'Enter') $('ytLoad').click(); });
-$('ytPlay').onclick = () => { if (!ytReady) return; if (ST[stIdx].id !== 'yt') { tune(0); return; } yt.getPlayerState() === 1 ? yt.pauseVideo() : yt.playVideo(); };
-$('ytNext').onclick = () => ytReady && yt.nextVideo(); $('ytPrev').onclick = () => ytReady && yt.previousVideo(); $('ytShuf').onchange = e => { store.set({ shuffle: e.target.checked }); if (ytReady) yt.setShuffle(e.target.checked); };
+$('ytPlay').onclick = () => { if (!ytReady) return; if (ST[stIdx].id !== 'yt') { tune(0); return; } yt.getPlayerState() === 1 ? yt.pauseVideo() : yt.playVideo(); changed('radio'); };
+$('ytNext').onclick = () => { if (ytReady) { yt.nextVideo(); changed('radio'); } }; $('ytPrev').onclick = () => { if (ytReady) { yt.previousVideo(); changed('radio'); } }; $('ytShuf').onchange = e => { store.set({ shuffle: e.target.checked }); if (ytReady) yt.setShuffle(e.target.checked); };
+
+/* ====================== shared room (see multi.js) ====================== */
+let applying = false, pendingYT = null;
+function changed(what) { if (!applying && Tapri.hooks.changed) Tapri.hooks.changed(what); }
+function ytState() { let idx = 0, time = 0, playing = false; if (yt && ytReady) { try { idx = yt.getPlaylistIndex(); time = yt.getCurrentTime(); playing = yt.getPlayerState() === 1; } catch (e) {} } return { idx: Math.max(0, idx), time, playing }; }
+function applyYT(s) {
+  if (!ytReady) { pendingYT = s; return; }
+  const cur = ytState(), want = s.time + (s.playing ? s.lag || 0 : 0);
+  try {
+    if (cur.idx !== s.idx || Math.abs(cur.time - want) > 4) yt.loadPlaylist({ list: ytId, listType: 'playlist', index: s.idx, startSeconds: want });
+    if (!s.playing) yt.pauseVideo();
+  } catch (e) {}
+  ytSync();
+}
+Tapri.radioCtl = {
+  get() { const y = ytState(); return { station: ST[stIdx].id, playlist: ytId, idx: y.idx, time: y.time, playing: y.playing }; },
+  apply(s) {
+    applying = true;
+    try {
+      if (s.playlist && s.playlist !== ytId) { ytId = s.playlist; $('ytUrl').value = ytId; $('np').textContent = 'Loading…'; if (yt && ytReady) yt.loadPlaylist({ list: ytId, listType: 'playlist', index: s.idx || 0 }); else { loadYTApi(); makeYT(); } }
+      const i = ST.findIndex(x => x.id === s.station); if (i >= 0 && i !== stIdx) tune(i);
+      if (s.station === 'yt' && ytId) applyYT(s);
+    } finally { applying = false; }
+  }
+};
+Tapri.worldCtl = {
+  get() { return { env: world.env, theme: world.theme, scene: sceneName }; },
+  apply(w) { applying = true; try { if (w.env !== world.env || w.theme !== world.theme) setWorld({ env: w.env, theme: w.theme }); if (w.scene && w.scene !== sceneName) setScene(w.scene); } finally { applying = false; } }
+};
+Tapri.view = { layer: bubEl, scale: () => S };
 
 /* ====================== boot ====================== */
 const saved = store.get();
@@ -224,7 +255,7 @@ async function boot() {
 }
 const bdc = document.getElementById('bd'), bdx = bdc.getContext('2d'); let bdn = 0;
 Tapri.quality = 0; let slowT = 0, fastT = 0, ema = 0.016;
-function loop(now) { const dt = Math.min(0.05, (now - last) / 1000); last = now; T += dt; ema += (dt - ema) * 0.08; if (started) { if (ema > 0.034) { slowT += dt; fastT = 0; } else if (ema < 0.026) { fastT += dt; slowT = 0; } else { slowT = fastT = 0; } if (slowT > 2.5 && Tapri.quality < 2) { Tapri.quality++; slowT = 0; } if (fastT > 12 && Tapri.quality > 0) { Tapri.quality--; fastT = 0; } } step(dt); camFollow(); applyCam(false); render(); placeBubbles(); requestAnimationFrame(loop); }
+function loop(now) { const dt = Math.min(0.05, (now - last) / 1000); last = now; T += dt; ema += (dt - ema) * 0.08; if (started) { if (ema > 0.034) { slowT += dt; fastT = 0; } else if (ema < 0.026) { fastT += dt; slowT = 0; } else { slowT = fastT = 0; } if (slowT > 2.5 && Tapri.quality < 2) { Tapri.quality++; slowT = 0; } if (fastT > 12 && Tapri.quality > 0) { Tapri.quality--; fastT = 0; } } step(dt); camFollow(); applyCam(false); render(); placeBubbles(); if (Tapri.hooks.frame) Tapri.hooks.frame(); requestAnimationFrame(loop); }
 Tapri.stats = { bubbles: [], helperStates: {}, ownerActs: {}, seen: new Set() };
 window.__world = (e, t) => setWorld({ env: e, theme: t });
 window.__sim = sec => { const n = Math.round(sec / 0.05); for (let i = 0; i < n; i++) { T += 0.05; step(0.05); const st = Tapri.stats; st.helperStates[helper.state] = (st.helperStates[helper.state] || 0) + 1; const key = owner.runner ? (owner.runner.ctx.routine ? 'routine' : owner.runner.ctx.buyer ? 'sell:' + owner.runner.ctx.item : 'chai') : 'idle'; st.ownerActs[key] = (st.ownerActs[key] || 0) + 1; } };
@@ -234,6 +265,7 @@ $('enter').onclick = async () => {
   if (saved.muted) { doMute(true); } else setMuteUI();
   const cfgPl = parsePlaylist(window.TAPRI_CONFIG && window.TAPRI_CONFIG.PLAYLIST) || saved.playlist || ''; const startSt = saved.station ? ST.findIndex(s => s.id === saved.station) : (cfgPl ? 0 : 1);
   setRadio(true); tune(startSt >= 0 ? startSt : 1); if (cfgPl) setPlaylist(cfgPl, false); if (window.innerWidth > 900) togglePanel(true);
+  if (Tapri.hooks.entered) Tapri.hooks.entered();
 };
 setMuteUI();
 // dev: index.html#shot=night&t=20&act=fry  (auto-enters, fast-forwards, optionally forces an owner action)

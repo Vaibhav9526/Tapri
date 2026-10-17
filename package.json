@@ -1,0 +1,10 @@
+{
+  "name": "tapri",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Tapri Radio - a chai stall you can share with friends (rooms, synced radio, voice chat)",
+  "scripts": { "start": "node server/index.mjs" },
+  "engines": { "node": ">=18" },
+  "dependencies": { "ws": "^8.18.0" }
+}

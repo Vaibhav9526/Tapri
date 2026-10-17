@@ -135,3 +135,27 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 kbd{font-family:inherit;padding:1px 6px;border-radius:5px;background:rgba(255,200,120,.16);border:1px solid var(--line)}
 @media (max-width:420px){.feat{grid-template-columns:1fr}.keys{display:none}}
 @media (prefers-reduced-motion:reduce){.eq.on i,#flash.go{animation:none}}
+
+/* ---- shared room: intro form, room bar, name tags ---- */
+.room{margin:18px auto 0;max-width:300px;display:grid;gap:8px}
+.room .or{margin:0;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#eacfa6;opacity:.8;display:flex;align-items:center;gap:10px}
+.room .or::before,.room .or::after{content:"";flex:1;height:1px;background:var(--line)}
+.room input[type=text],.room input:not([type]){width:100%;padding:.6em .8em;font:inherit;font-size:16px;color:#fff3da;background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:10px;text-align:center}
+#rmCode{text-transform:uppercase;letter-spacing:.3em;font-weight:600}
+.rm-row{display:flex;gap:8px}.rm-row input{flex:1;min-width:0}
+.room button{font:inherit;font-size:16px;padding:.55em 1.1em;color:#fff3da;background:#3d6b4a;border:2px solid #b8e3b0;border-radius:10px;box-shadow:3px 3px 0 #000;cursor:pointer}
+.room button.ghost{background:rgba(0,0,0,.3);border-color:var(--line);box-shadow:none}
+.room button:active{transform:translate(2px,2px)}
+.rm-mic{font-size:13px;color:#eacfa6;display:flex;align-items:center;justify-content:center;gap:6px}
+.room .err{margin:0;min-height:1.2em;font-size:13px;color:#ff9c85}
+#roomBar{position:fixed;left:50%;top:calc(66px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:22;display:flex;align-items:center;gap:4px;padding:4px;border-radius:14px;background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--line);font-size:13px;white-space:nowrap}
+#roomBar[hidden]{display:none}
+#roomBar button{font:inherit;color:inherit;background:none;border:0;padding:6px 10px;border-radius:10px;cursor:pointer}
+#roomBar button:hover{background:rgba(255,220,160,.12)}
+#roomBar b{letter-spacing:.2em;margin-left:6px}
+#roomBar #rbCount{padding:0 6px;opacity:.85}
+#rbMic.on{background:rgba(120,200,120,.28)}#rbMic.muted{background:rgba(220,90,70,.35)}
+.ptag{position:absolute;left:0;top:0;pointer-events:none;padding:1px 7px;border-radius:9px;font-size:12px;font-weight:600;color:#fff3da;background:rgba(20,12,6,.72);border:1px solid rgba(255,220,160,.3);white-space:nowrap;transition:box-shadow .12s,border-color .12s}
+.ptag.me{border-color:#ffd27a}
+.ptag.talk{border-color:#8be28b;box-shadow:0 0 0 2px rgba(139,226,139,.55),0 0 12px rgba(139,226,139,.6)}
+.ptag.nomic::after{content:" 🔇"}

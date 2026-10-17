@@ -115,8 +115,22 @@
     <p class="sub">A living chai tapri with a radio. Eight places, four times of day, your own YouTube playlist — and the whole neighbourhood chatting around you.</p>
     <ul class="feat"><li>🎧 Best with headphones</li><li>📻 Radio + your playlist</li><li>🗣️ Hindi chit-chat &amp; stories</li><li>⛈️ Rain, thunder &amp; traffic</li></ul>
     <button id="enter">Baith jaao</button>
+    <div class="room" id="roomForm">
+      <p class="or"><span>or sit with friends</span></p>
+      <input id="rmName" maxlength="16" placeholder="Your name" autocomplete="nickname" aria-label="Your name">
+      <div class="rm-row"><input id="rmCode" maxlength="8" placeholder="ROOM CODE" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-label="Room code"><button id="rmJoin">Join</button></div>
+      <button id="rmNew" class="ghost">Create a new room</button>
+      <label class="rm-mic"><input type="checkbox" id="rmMic" checked> Talk with my mic</label>
+      <p id="rmErr" class="err" role="alert"></p>
+    </div>
     <p class="keys"><kbd>M</kbd> mute · <kbd>R</kbd> radio · <kbd>W</kbd> place · <kbd>1</kbd>–<kbd>4</kbd> time of day</p>
   </div>
+</div>
+<div id="roomBar" hidden>
+  <button id="rbCode" title="Copy invite link"><span class="cup">☕</span><b id="rbCodeTxt">----</b></button>
+  <span id="rbCount" title="People in this room">👥 1</span>
+  <button id="rbMic" title="Join voice chat">🎙 Join voice</button>
+  <button id="rbLeave" title="Leave room" aria-label="Leave room">✕</button>
 </div>
 <div id="flash" aria-hidden="true"></div>
 <div id="toast" role="status" aria-live="polite"></div>
@@ -134,5 +148,6 @@
 <script src="js/stage.js"></script>
 <script src="js/worlds.js"></script>
 <script src="js/main.js"></script>
+<script src="js/multi.js"></script>
 </body>
 </html>
